@@ -1,0 +1,112 @@
+# Consent Required - HTTP 430 Protocol
+# aggregate-library (aLib) - Common Library Specification
+
+# This file documents our consent-first approach and HTTP 430 protocol support.
+# HTTP 430 (Consent Required) is a proposed status code for consent-aware systems.
+
+## Consent Philosophy
+
+This project respects user consent and autonomy:
+
+1. **Documentation Access**: No consent required (public specifications)
+2. **Contribution**: Implicit consent via DCO signature
+3. **Data Collection**: None (we collect no user data)
+4. **Cookies**: None used in project infrastructure
+5. **Tracking**: No analytics or tracking scripts
+6. **AI Training**: See .well-known/ai.txt for policies
+
+## HTTP 430 Support
+
+If this project were to implement a web service, it would:
+
+- Return HTTP 430 when consent is required but not provided
+- Provide clear consent mechanisms
+- Allow easy consent withdrawal
+- Never assume consent
+- Document all consent requirements
+
+## Consent in Practice
+
+### For Contributors
+
+By contributing, you consent to:
+
+- Your contributions being licensed under MIT / Palimpsest v0.8
+- Your name appearing in git history and MAINTAINERS.md
+- Your code being used by others under the licenses
+- Attribution per .well-known/humans.txt
+
+You do NOT consent to (and we do NOT do):
+
+- Sale of your contributions
+- Proprietary relicensing without permission
+- Use of your identity for endorsements
+- Harvesting your personal data
+
+### For Users
+
+By using these specifications, you consent to:
+
+- The terms of MIT and/or Palimpsest v0.8 licenses
+- Attribution requirements (if using Palimpsest)
+
+You do NOT consent to (and we do NOT require):
+
+- Sharing your usage data with us
+- Allowing telemetry or analytics
+- Accepting cookies or tracking
+- Providing personal information
+
+### For Implementations
+
+Implementations of this specification should:
+
+- Respect user consent for data operations
+- Never assume default consent
+- Provide clear consent mechanisms
+- Allow consent withdrawal
+- Document consent requirements
+
+## Consent Withdrawal
+
+You may withdraw consent at any time:
+
+### Contributors
+
+- Remove yourself from MAINTAINERS.md via PR
+- Request removal from humans.txt
+- Note: Git history is immutable, but we can mark you as inactive
+
+### Users
+
+- Stop using the specifications
+- Implementations should provide data export
+- Implementations should honor deletion requests
+
+## Related Resources
+
+- Code of Conduct: CODE_OF_CONDUCT.adoc
+- Privacy: We collect no data, so no privacy policy needed
+- AI Training: .well-known/ai.txt
+- Licensing: LICENSE.txt
+
+## Contact
+
+For consent-related questions:
+
+- Open issue with 'consent' label
+- Email maintainers (see MAINTAINERS.md)
+
+## Inspiration
+
+This approach is inspired by:
+
+- WokeLang (consent-driven programming language)
+- HTTP 430 status code proposal
+- GDPR right to be forgotten
+- Ethical computing principles
+
+---
+
+Last updated: 2025-11-22
+Version: 1.0.0

@@ -1,0 +1,148 @@
+# SPDX-License-Identifier: MIT OR Palimpsest-0.8
+# SPDX-FileCopyrightText: 2025 Hyperpolymath
+
+# aggregate-library (aLib) - .gitignore
+# Specifies intentionally untracked files that Git should ignore
+
+## Editor and IDE files
+*~
+*.swp
+*.swo
+.*.sw?
+*#
+.#*
+.DS_Store
+Thumbs.db
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+## Build artifacts and generated files
+/dist/
+/build/
+/target/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+## Package manager directories
+/node_modules/
+/.pnpm-store/
+/vendor/
+/.bundle/
+
+## Environment and secrets
+.env
+.env.local
+.env.*.local
+secrets.yml
+credentials.json
+*.key
+*.pem
+*.p12
+
+## Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+## Testing
+/coverage/
+/.nyc_output/
+/test-results/
+/.pytest_cache/
+/__pycache__/
+*.py[cod]
+
+## Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.cache
+
+## OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+## Lock files (optional - some projects track these)
+# Uncomment if you don't want to track lock files:
+# package-lock.json
+# yarn.lock
+# Cargo.lock
+# mix.lock
+# flake.lock
+
+## Documentation build output
+/docs/_build/
+/docs/.doctrees/
+/site/
+
+## Nix
+result
+result-*
+/.direnv/
+
+## Justfile artifacts
+.just-build/
+
+## Git hooks (if generated)
+# We track git hooks, so this is commented:
+# .git/hooks/*
+
+## Large files that shouldn't be in repo
+*.zip
+*.tar.gz
+*.tar.bz2
+*.7z
+*.rar
+
+## Database files
+*.db
+*.sqlite
+*.sqlite3
+
+## Misc
+.sass-cache/
+.parcel-cache/

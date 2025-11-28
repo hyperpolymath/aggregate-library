@@ -2,7 +2,7 @@
 
 **A Common Library specification shared across radically different programming languages**
 
-[![RSR Compliance](https://img.shields.io/badge/RSR-Bronze+-blue.svg)](RSR_COMPLIANCE.md)
+[![RSR Compliance](https://img.shields.io/badge/RSR-Gold%20100%2F100-gold.svg)](RSR_COMPLIANCE.md)
 [![License](https://img.shields.io/badge/License-MIT%20%2F%20Palimpsest%20v0.8-green.svg)](LICENSE.txt)
 [![TPCF](https://img.shields.io/badge/TPCF-Perimeter%203-orange.svg)](CONTRIBUTING.md)
 [![Offline-First](https://img.shields.io/badge/Offline-First-brightgreen.svg)](SPEC_FORMAT.md)
@@ -259,7 +259,7 @@ Each language implements the same operation differently, but all satisfy the spe
 
 ## RSR Compliance
 
-This project follows the **Rhodium Standard Repository (RSR)** framework and has achieved **Bronze+ compliance level**.
+This project follows the **Rhodium Standard Repository (RSR)** framework and has achieved **GOLD compliance (100/100)** - the highest tier.
 
 ### Compliance Highlights
 

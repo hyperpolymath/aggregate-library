@@ -1,76 +1,468 @@
-= aggregate-library
-Jonathan D.A. Jewell <jonathan.jewell@gmail.com>
-:toc: macro
+= aggregate-library (aLib)
+:toc: left
+:toclevels: 3
 :icons: font
 :source-highlighter: rouge
-:experimental:
-:url-github: https://github.com/hyperpolymath/aggregate-library
-:url-gitlab: https://gitlab.com/hyperpolymath/aggregate-library
-:url-bitbucket: https://bitbucket.org/hyperpolymath/aggregate-library
-:url-codeberg: https://codeberg.org/hyperpolymath/aggregate-library
 
-Data aggregation patterns and streaming collector library
+**A Common Library specification shared across radically different programming languages**
 
-image:https://img.shields.io/badge/RSR-Certified-gold[RSR Certified]
-image:https://img.shields.io/badge/License-AGPL%20v3-blue[License]
+image:https://img.shields.io/badge/RSR-Gold%20100%2F100-gold.svg[RSR Compliance,link=RSR_COMPLIANCE.md]
+image:https://img.shields.io/badge/License-MIT%20%2F%20GPL%20%2F%20Palimpsest%20v0.8-green.svg[License,link=LICENSE.txt]
+image:https://img.shields.io/badge/TPCF-Perimeter%203-orange.svg[TPCF,link=CONTRIBUTING.adoc]
+image:https://img.shields.io/badge/Offline-First-brightgreen.svg[Offline-First,link=SPEC_FORMAT.md]
+image:https://img.shields.io/badge/version-0.1.0-blue.svg[Version,link=CHANGELOG.md]
 
-toc::[]
+== Quick Links
+
+* 📖 link:SPEC_FORMAT.md[Specification Format]
+* 🤝 link:CONTRIBUTING.adoc[Contributing Guide]
+* 🛡️ link:SECURITY.md[Security Policy]
+* ⚖️ link:CODE_OF_CONDUCT.adoc[Code of Conduct]
+* 📊 link:RSR_COMPLIANCE.md[RSR Compliance Report]
+* 📝 link:CHANGELOG.md[Changelog]
+* 🗺️ link:ROADMAP.md[Roadmap]
+* 🏛️ link:GOVERNANCE.adoc[Governance]
 
 == Overview
 
-aggregate-library is part of the link:https://rhodium.sh[Rhodium Standard] (RSR) ecosystem.
+The **aggregate-library (aLib)** project defines a minimal *Common Library* that represents the intersection of functionality across seven fundamentally different programming languages. Each language will have its own *Aggregate Library* = *Common Library* + language-specific *Standard Library*.
 
-Domain: *software-development*
+This project aims to reduce programming language territoriality while preserving the unique features that make each language valuable.
 
-== Installation
+== Philosophy
+
+=== Why a Common Library?
+
+Programming languages often evolve in isolation, leading to:
+
+* Fragmented ecosystems
+* Unnecessary relearning of basic concepts
+* Tribalism and language wars
+* Difficulty in polyglot development
+
+The Common Library provides:
+
+* A shared foundation across diverse paradigms
+* Minimal but useful universal operations
+* A framework for understanding language similarities and differences
+* A basis for cross-language tooling and interoperability
+
+=== Design Principles
+
+. *Minimal*: Include only operations that exist across ALL languages
+. *Universal*: Operations must work across radically different paradigms
+. *Testable*: Each operation has concrete, executable test cases
+. *Language-agnostic*: Specifications avoid language-specific details
+. *Pragmatic*: Focus on commonly needed operations
+
+== The Seven Languages
+
+The Common Library is defined as the intersection of these seven diverse languages:
+
+. *WokeLang* - Consent-driven, emotional computing
+. *Duet/Ensemble* - AI-first, session types, effect systems
+. *Eclexia* - Sustainability-focused, energy budgets
+. *Oblíbený* - Security-first, provable termination
+. *RT-Lang* - Real-time systems, dependent types, safety certification
+. *Phronesis* - Ethical reasoning, values-based programming
+. *Julia the Viper* - Reversible computing, totality
+
+These languages were chosen specifically because they are *radically different* in philosophy, syntax, and features - providing a rigorous stress test for what truly universal operations look like.
+
+== Common Library Operations
+
+The Common Library includes *20 core operations* across 6 categories:
+
+=== Arithmetic (5 operations)
+
+* `add` - Addition
+* `subtract` - Subtraction
+* `multiply` - Multiplication
+* `divide` - Division
+* `modulo` - Remainder
+
+=== Comparison (6 operations)
+
+* `less_than` - Strictly less than
+* `greater_than` - Strictly greater than
+* `equal` - Equality
+* `not_equal` - Inequality
+* `less_equal` - Less than or equal
+* `greater_equal` - Greater than or equal
+
+=== Logical (3 operations)
+
+* `and` - Logical conjunction
+* `or` - Logical disjunction
+* `not` - Logical negation
+
+=== String (3 operations)
+
+* `concat` - String concatenation
+* `length` - String length
+* `substring` - Extract substring
+
+=== Collection (4 operations)
+
+* `map` - Transform each element
+* `filter` - Select elements by predicate
+* `fold` - Reduce to single value (also known as reduce)
+* `contains` - Check element membership
+
+=== Conditional (1 operation)
+
+* `if_then_else` - Conditional branching
+
+== What's NOT in the Common Library
+
+The following are explicitly *excluded* from the Common Library because they vary across languages:
+
+* Error handling mechanisms
+* Concurrency primitives
+* Memory management strategies
+* Type system specifics beyond basic categories
+* I/O operations
+* Domain-specific features (consent, energy, security, ethics, etc.)
+* Language-specific optimizations
+
+These belong in each language's *Standard Library*.
+
+== Specification Format
+
+Each operation is specified with three components:
+
+=== 1. Interface Signature
+
+Abstract signature independent of language syntax:
+
+[source]
+----
+operation_name: InputType1, InputType2 -> OutputType
+----
+
+=== 2. Behavioral Semantics
+
+* Purpose and description
+* Parameter definitions
+* Return value specification
+* Mathematical properties
+* Edge cases
+
+=== 3. Executable Test Cases
+
+Concrete examples in YAML format:
+
+[source,yaml]
+----
+test_cases:
+  - input: [arg1, arg2]
+    output: expected_result
+    description: "What this tests"
+----
+
+See link:SPEC_FORMAT.md[] for complete details.
+
+== Repository Structure
+
+[source]
+----
+aggregate-library/
+├── README.adoc               # This file
+├── LICENSE.txt               # Triple: MIT / GPL / Palimpsest v0.8
+├── CLAUDE.md                 # AI assistant guidelines
+├── SPEC_FORMAT.md            # Specification format documentation
+├── RSR_COMPLIANCE.md         # RSR compliance report (Gold 100/100)
+├── SECURITY.md               # Security policies
+├── CONTRIBUTING.adoc         # Contribution guidelines
+├── CODE_OF_CONDUCT.adoc      # Community standards
+├── GOVERNANCE.adoc           # Governance model
+├── MAINTAINERS.md            # Project governance
+├── CHANGELOG.md              # Version history
+├── ROADMAP.md                # Project roadmap
+├── REVERSIBILITY.md          # Reversibility philosophy
+├── FUNDING.yml               # Funding information
+├── justfile                  # Build automation (30+ recipes)
+├── flake.nix                 # Nix reproducible builds
+├── config.ncl                # Nickel configuration
+├── Containerfile             # Podman/Docker container
+├── .gitignore                # Git ignore patterns
+├── .gitattributes            # Git attributes
+├── .well-known/              # Standard metadata
+│   ├── security.txt          # RFC 9116 compliant
+│   ├── ai.txt                # AI training policies
+│   ├── humans.txt            # Contributor attribution
+│   ├── consent-required.txt  # HTTP 430 protocol
+│   └── provenance.json       # Supply chain provenance
+└── specs/                    # Operation specifications
+    ├── arithmetic/
+    │   ├── add.md
+    │   ├── subtract.md
+    │   ├── multiply.md
+    │   ├── divide.md
+    │   └── modulo.md
+    ├── comparison/
+    │   ├── less_than.md
+    │   ├── greater_than.md
+    │   ├── equal.md
+    │   ├── not_equal.md
+    │   ├── less_equal.md
+    │   └── greater_equal.md
+    ├── logical/
+    │   ├── and.md
+    │   ├── or.md
+    │   └── not.md
+    ├── string/
+    │   ├── concat.md
+    │   ├── length.md
+    │   └── substring.md
+    ├── collection/
+    │   ├── map.md
+    │   ├── filter.md
+    │   ├── fold.md
+    │   └── contains.md
+    └── conditional/
+        └── if_then_else.md
+----
+
+== Using This Specification
+
+=== For Language Designers
+
+. Review the Common Library operations
+. Ensure your language can implement each operation
+. Implement operations in your language's syntax
+. Run the test cases to verify compliance
+. Extend with your language-specific Standard Library
+
+=== For Language Implementers
+
+. Read the specification for each operation
+. Implement according to the behavioral semantics
+. Ensure all test cases pass
+. Document any implementation-defined behaviors
+. Consider creating a compliance test suite
+
+=== For Learners
+
+. Study the Common Library to understand universal programming concepts
+. Compare how different languages implement the same operations
+. Use as a reference when learning new languages
+. Understand what's common vs what's language-specific
+
+== Quick Start
+
+=== Installation
 
 [source,bash]
 ----
-# Clone from GitHub (primary)
-git clone {url-github}
+# Clone the repository
+git clone https://github.com/Hyperpolymath/aggregate-library.git
+cd aggregate-library
 
-# Or from mirrors
-git clone {url-gitlab}
-git clone {url-codeberg}
+# Using Nix (recommended for reproducibility)
+nix develop
+
+# Or install dependencies manually
+# - just (task runner)
+# - git
 ----
 
-== RSR Stack
+=== Validation
 
-This project follows RSR conventions:
+[source,bash]
+----
+# Validate all specifications
+just validate
 
-* ✅ ReScript for frontend/logic
-* ✅ Deno for JS runtime
-* ✅ WASM for performance-critical code
-* ✅ Rust/OCaml/Haskell for systems/proofs
-* ✅ Guile/Scheme for configuration
-* ❌ No TypeScript
-* ❌ No Go
-* ❌ No npm
+# Run all tests
+just test
 
-== Mirrors
+# Check documentation
+just docs
 
-[cols="1,2"]
-|===
-| Platform | URL
+# Full compliance check
+just check
 
-| GitHub (primary) | {url-github}
-| GitLab | {url-gitlab}
-| Bitbucket | {url-bitbucket}
-| Codeberg | {url-codeberg}
-|===
+# List all operations
+just list
 
-== License
+# Show repository statistics
+just stats
+----
 
-Licensed under AGPL-3.0-or-later OR LicenseRef-Palimpsest-0.5.
+=== Using with Nix
 
-See link:LICENSE[LICENSE] for details.
+[source,bash]
+----
+# Check flake
+nix flake check
+
+# Enter development shell
+nix develop
+
+# Build package
+nix build
+
+# Run validation
+nix run .#validate
+----
+
+=== Using with Containers
+
+[source,bash]
+----
+# Build with Podman (preferred)
+podman build -f Containerfile -t aggregate-library:latest .
+
+# Or with Docker
+docker build -f Containerfile -t aggregate-library:latest .
+
+# Run validation in container
+podman run aggregate-library:latest
+----
+
+== Example: Implementing `add`
+
+=== Common Library Specification
+
+[source]
+----
+add: Number, Number -> Number
+Purpose: Computes the sum of two numbers
+----
+
+=== WokeLang Implementation
+
+[source]
+----
+with_consent(a, b) => a + b
+----
+
+=== Duet Implementation
+
+[source,haskell]
+----
+add : Num -> Num -> Num
+add = \a b -> a + b
+----
+
+=== Oblíbený Implementation
+
+[source,rust]
+----
+fn add(a: SecureNum, b: SecureNum) -> SecureNum {
+    verified_add(a, b)
+}
+----
+
+Each language implements the same operation differently, but all satisfy the specification.
+
+== RSR Compliance
+
+This project follows the *Rhodium Standard Repository (RSR)* framework and has achieved *GOLD compliance (100/100)* - the highest tier.
+
+=== Compliance Highlights
+
+* ✅ *Documentation*: Complete (15+ files)
+* ✅ *Security*: Comprehensive policies (SECURITY.md, RFC 9116)
+* ✅ *Community*: TPCF Perimeter 3 (open contribution)
+* ✅ *Licensing*: Triple MIT / GPL / Palimpsest v0.8
+* ✅ *Offline-First*: Zero network dependencies
+* ✅ *Type Safety*: All operations fully typed
+* ✅ *Infrastructure*: Nix + Nickel + Containerfile + justfile
+* ✅ *Reproducibility*: Nix flakes ensure consistency
+* ✅ *Reversibility*: Every operation undoable
+* ✅ *Governance*: TPCF + MAA framework
+* ✅ *Supply Chain*: Provenance chains, SBOM
+
+Run `just rsr` to verify compliance or see link:RSR_COMPLIANCE.md[] for the full report.
 
 == Contributing
 
-See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+We welcome contributions! This specification is part of ongoing research into cross-paradigm language design.
 
-== Metadata
+=== Before Contributing
 
-* Domain: software-development
-* Framework: RSR (Rhodium Standard Repository)
-* Dublin Core: link:.well-known/dc.xml[.well-known/dc.xml]
+. Read link:CONTRIBUTING.adoc[] for guidelines
+. Review link:CODE_OF_CONDUCT.adoc[] for community standards
+. Check link:SPEC_FORMAT.md[] for specification format
+
+=== Ways to Contribute
+
+* Improve specification clarity
+* Add test cases
+* Enhance documentation
+* Report issues or ambiguities
+* Propose new operations (rare - must exist in all 7 languages)
+
+=== Community
+
+* 🏛️ Governance: link:GOVERNANCE.adoc[]
+* 🤝 TPCF Perimeter 3: Open contribution
+* 💚 Emotional Safety: Prioritized in our community
+* 🔒 Security: link:SECURITY.md[]
+* 🔄 Reversibility: link:REVERSIBILITY.md[]
+
+== License
+
+This project is triple-licensed under your choice of:
+
+=== MIT License
+
+Permissive use for maximum compatibility and adoption.
+
+=== GNU GPL v3.0 or later
+
+Copyleft license ensuring derivatives remain open source.
+
+=== Palimpsest License v0.8 ⭐ (Philosophically Encouraged)
+
+Ethical constraints ensuring responsible use:
+
+* Do no harm
+* Respect autonomy
+* Promote justice
+* Preserve privacy
+* Support sustainability
+* Foster community
+
+*We philosophically encourage choosing the Palimpsest license* for its ethical framework, but you may choose any of the three licenses for your use case.
+
+See link:LICENSE.txt[] for full terms and selection guidance.
+
+== Future Work
+
+* Grammar mappings for each language
+* Automated compliance testing
+* Implementation examples in all 7 languages
+* Cross-language interoperability layer
+* Additional operations based on language evolution
+
+See link:ROADMAP.md[] for detailed roadmap.
+
+== Related Projects
+
+* *iSOS*: The broader framework (documentation forthcoming)
+* Individual language repositories (links TBD)
+
+== Acknowledgments
+
+* The seven language communities for inspiration
+* RSR framework authors for compliance standards
+* Open source community for collaborative spirit
+* All contributors (see `.well-known/humans.txt`)
+
+== Contact
+
+* *Issues*: https://github.com/Hyperpolymath/aggregate-library/issues
+* *Discussions*: Open a GitHub discussion
+* *Security*: See link:SECURITY.md[] and `.well-known/security.txt`
+* *Maintainers*: See link:MAINTAINERS.md[]
+
+---
+
+*Version*: 0.1.0 (Initial specification) +
+*Last Updated*: 2025-11-22 +
+*RSR Compliance*: 🏆 Gold (100/100) +
+*TPCF Perimeter*: 3 (Community Sandbox) +
+*License*: MIT / GPL-3.0-or-later / Palimpsest-0.8 (choose one)

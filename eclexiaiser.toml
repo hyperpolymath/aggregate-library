@@ -1,0 +1,26 @@
+# eclexiaiser manifest — energy/carbon resource budgets
+# SPDX-License-Identifier: PMPL-1.0-or-later
+
+[project]
+name = "aggregate-library"
+
+[[functions]]
+name = "Collection.fold"
+source = "src/ALib.mres"
+energy-budget-mj = 25.0
+carbon-budget-mg = 5.0
+
+[[functions]]
+name = "Collection.filter"
+source = "src/ALib.mres"
+energy-budget-mj = 20.0
+carbon-budget-mg = 4.0
+
+[carbon]
+provider = "static"
+region = "GB"
+static-intensity = 200.0
+
+[report]
+format = "text"
+include-recommendations = true

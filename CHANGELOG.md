@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Extracted into a standalone top-level repository (`hyperpolymath/aggregate-library`), split out of the `developer-ecosystem` monorepo with full history preserved.
+- Deduplicated documentation: removed duplicate `.adoc`/`.md` pairs, keeping the richer copy in each case (`CONTRIBUTING.adoc`; `CHANGELOG.md`, `CODE_OF_CONDUCT.md`, `MAINTAINERS.md`).
+
 ### Planned
 - Grammar mappings for all seven target languages
 - Automated compliance testing framework

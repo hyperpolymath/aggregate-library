@@ -22,6 +22,24 @@ invalidation" become type-level guarantees rather than runtime conventions.
 The arithmetic, comparison, logical, conditional, and string operations are
 total pure functions and conform directly.
 
+== Reconciliation with `affinescript/stdlib/alib.affine`
+
+affinescript already ships a *runnable* aLib conformer in its standard library
+at `stdlib/alib.affine` — it compiles and is exercised by the affinescript test
+suite (verified green, 457 tests). It currently implements **22** of the
+overlap operations.
+
+The two are complementary, not duplicate: `stdlib/alib.affine` is the
+authoritative *runnable* impl, while this file is the **spec-complete
+extension-layer reference** (all 29 operations in `specs/`), mapping each spec
+to its AffineScript shape and to the six faces.
+
+The stdlib impl is missing 7 spec operations: `absolute`, `negate`, `max`,
+`min` (arithmetic), `reverse` (string), and the collection `length` / `empty`
+(its `length` is string-only). Adding those to `stdlib/alib.affine` would make
+the runnable stdlib fully aLib-spec-conformant; until then this reference
+covers the gap.
+
 == Caveat
 
 These are spec-level reference shapes. They are written to canonical

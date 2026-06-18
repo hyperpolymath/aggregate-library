@@ -60,6 +60,21 @@ These relationships are *optional* and *non-binding*:
 
 This repo should not become a “dependency magnet”; implementation repos should be able to adopt the method without importing code from here.
 
+== AffineScript faces — the extension layer
+
+aLib also serves as the *extension layer* over the AffineScript face family.
+AffineScript is one canonical cube presented through six faces (RattleScript,
+JaffaScript, PseudoScript, LucidScript, CafeScripto, and the canonical face);
+implementing an aLib operation *once* in canonical AffineScript conforms it for
+all six faces at the library level, because the faces are surface sugar that
+lower to that one definition. This pairs the *library* same-cube guarantee
+(aLib conformance vectors) with the *syntax* same-cube guarantee (the
+`invariant-path` `faces` profile) — the same canonical artefact, grounded on
+two axes.
+
+* Conformer: link:src/affinescript/ALib.affine[`src/affinescript/ALib.affine`] — all 29 operations, with an affine-typed collection group that makes AffineScript a *stronger* conformer than a GC'd reference.
+* The argument + a faces gallery (one operation across all six faces): link:docs/EXTENSION-LAYER.adoc[`docs/EXTENSION-LAYER.adoc`].
+
 == Design principles
 * Minimal surfaces, explicit semantics.
 * Conformance tests as the safety net.

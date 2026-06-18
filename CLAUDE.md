@@ -233,7 +233,7 @@ When working with this repository:
 2. **Implementation**: Follow ReScript idioms, use pure functions
 3. **Testing**: Validate before committing
 4. **Documentation**: Keep specs, code, and docs in sync
-5. **License**: All new files use PMPL-1.0-or-later
+5. **License**: New files use MPL-2.0 (code) / CC-BY-SA-4.0 (docs). Per the 2026-06-02 estate policy, PMPL-1.0-or-later is reserved for `palimpsest-license`, `palimpsest-plasma`, and `consent-aware-http` only — aLib is a sole-owner repo, so MPL-2.0/CC-BY-SA-4.0. (Existing headers are not swept; flag drift, do not bulk-edit.)
 6. **Author**: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 ## Related Projects

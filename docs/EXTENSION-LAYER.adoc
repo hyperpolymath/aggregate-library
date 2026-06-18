@@ -1,0 +1,164 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell (hyperpolymath)
+= aLib as the Extension Layer over the AffineScript Faces
+:toc: macro
+:toclevels: 3
+
+toc::[]
+
+== Two roles, in order
+
+aggregate-library (aLib) plays two distinct roles in the estate, and the order
+matters.
+
+*First, on its own terms* — aLib is a _methods_ repository. It specifies the
+minimal *overlap* shared by libraries across wildly different systems
+(arithmetic, comparison, logical, collection, string, conditional — 29
+operations) as language-neutral specs plus executable YAML conformance
+vectors. It is deliberately *not* a standard library, not a dependency to
+import, and has no blessed implementation: a system "conforms" by implementing
+the operations and passing the vectors. ReScript and Elixir conformers already
+live in this repo as reference shapes.
+
+*Second, as an extension layer* — once the AffineScript *faces* exist (one
+canonical cube; six surface faces — RattleScript, JaffaScript, PseudoScript,
+LucidScript, CafeScripto, and the canonical face — see
+`affinescript/docs/specs/faces.adoc`), aLib becomes the layer that sits one
+level _above_ them. This document is about that second role.
+
+== The two axes of "same cube"
+
+There are two independent ways a program can be "the same thing" while looking
+different, and the faces work plus aLib are the two axes:
+
+[cols="1,2,2", options="header"]
+|===
+| Axis | Unifies | Proven by
+
+| *Faces* (syntax axis)
+| many _surfaces_ over **one** core
+| `invariant-path` `faces` profile — every face's `preview-*` lowering
+  normalises to the same canonical text (`verify-same-cube.sh`)
+
+| *aLib* (library axis)
+| **one** API over many _cores_
+| aLib conformance vectors — every conformer returns the spec's outputs
+|===
+
+They compose. AffineScript-with-faces is the single point where *both* axes
+meet:
+
+[source]
+----
+        aLib operation  (one library API, language-neutral)
+                │  conformance vectors  (library axis)
+                ▼
+   AffineScript canonical conformer   ← src/affinescript/ALib.affine
+                │  preview-* transforms (syntax axis)
+                ▼
+  ┌─────────┬─────────┬──────────┬──────────┬───────────┐
+  │ rattle  │ jaffa   │ pseudo   │ lucid    │ cafe      │  … the six faces
+  └─────────┴─────────┴──────────┴──────────┴───────────┘
+----
+
+So: implement an aLib operation *once* in canonical AffineScript, and you have
+conformed it for *all six faces at once* — because the faces are pure surface
+sugar that lower to that one definition. The library-level overlap (aLib) and
+the syntax-level overlap (faces) are grounded by two different mechanisms that
+agree on the same canonical artefact.
+
+== Why AffineScript is a *stronger* conformer
+
+aLib's base specs are written for ordinary (often GC'd) systems. AffineScript's
+affine types let it satisfy the same specs while making guarantees the base
+specs only hope for — this is the "extreme constraint" stress-test described in
+`affinescript/docs/ALIB-INTEGRATION.md`:
+
+[cols="1,2", options="header"]
+|===
+| aLib operation | What affine typing adds
+
+| `map(list, f)`
+| `list` is *moved*; each element consumed exactly once; no use-after-map, no
+  iterator invalidation — all at compile time.
+
+| `filter(list, pred)`
+| predicate *borrows* (`&T -> Bool`), so inspecting never consumes; kept
+  elements move into the result, dropped elements are released — no double-use.
+
+| `fold(list, acc, f)`
+| accumulator threaded by ownership; no aliasing of the in-flight state.
+
+| `if_then_else(c, t, e)`
+| both branches typed `T`, exactly one consumed, the other dropped — no leak.
+|===
+
+The conformer that records these is `src/affinescript/ALib.affine`.
+
+== Faces gallery — one operation, six faces, one cube
+
+Every face below is *surface syntax only*; each lowers (via its `preview-*`
+transformer) to the single canonical definition `fn add(a: Float, b: Float) ->
+Float { a + b }` in `src/affinescript/ALib.affine`, and therefore to the same
+typed-wasm. The aLib `add` vectors (`specs/arithmetic/add.md`) hold for all of
+them simultaneously.
+
+[cols="1,3", options="header"]
+|===
+| Face | `add` as written
+
+| Canonical
+| `fn add(a: Float, b: Float) -> Float { a + b }`
+
+| RattleScript (Python)
+| `def add(a: Float, b: Float) -> Float:` +
+  `    a + b`
+
+| JaffaScript (JS/TS)
+| `function add(a: Float, b: Float) -> Float { a + b }`
+
+| PseudoScript (pseudocode)
+| `function add(a: Float, b: Float) -> Float do` +
+  `    a + b` +
+  `end`
+
+| LucidScript (PureScript/Haskell)
+| `add :: Float -> Float -> Float` +
+  `add(a, b) = a + b`
+
+| CafeScripto (CoffeeScript)
+| `add = (a: Float, b: Float): Float -> a + b`
+|===
+
+The same holds for every other operation; `add` is shown because it is the
+shortest. Collection operations (e.g. `map`) read in each face's idiom too, but
+carry the *canonical* affine signature `fn map<T: affine, U>(list: [T], f: T ->
+U) -> [U]` underneath — faces change the surface, never the types.
+
+== Conformance wiring
+
+The AffineScript conformer is plugged into the existing conformance flow the
+same way the ReScript and Elixir conformers are:
+
+. operation signatures in `src/affinescript/ALib.affine` match
+  `specs/<category>/<op>.md` one-for-one;
+. the YAML `test_cases` blocks in each spec are the vectors;
+. `scripts/run-conformance-tests.ts` (Deno) loads the vectors and runs them
+  against a conformer.
+
+Because the six faces all lower to this one conformer, a *single* conformance
+run certifies the entire face family — there is no need to run the vectors six
+times. That is the practical pay-off of the extension layer: aLib gains an
+affine-typed conformer, and the faces gain a library-level same-cube guarantee
+to sit beside their syntax-level one.
+
+== Status and next steps
+
+* `src/affinescript/ALib.affine` — reference shapes for all 29 operations,
+  with affine annotations on the collection group. *Done.*
+* Faces gallery (this document) — `add` across all six faces. *Done.*
+* Wire `run-conformance-tests.ts` to execute the AffineScript conformer once
+  the AffineScript stdlib + Deno bindings land (tracked upstream in
+  `affinescript`). *Pending the toolchain.*
+* Contribute the affine-semantics notes back to the base specs' "Edge Cases"
+  as an explicit "affine conformer" subsection. *Follow-up.*

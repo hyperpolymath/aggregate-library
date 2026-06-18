@@ -1,0 +1,158 @@
+// SPDX-License-Identifier: MPL-2.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
+//
+// aggregate-library (aLib) — AffineScript conformer.
+//
+// The reference shape of every aLib overlap operation in canonical
+// AffineScript. This is the *extension-layer* conformer: AffineScript is one
+// cube, but it is presented through six faces (RattleScript / JaffaScript /
+// PseudoScript / LucidScript / CafeScripto and the canonical face). Every face
+// lowers to exactly these definitions, so conforming once here conforms for
+// all six faces at the library level — the same-cube property (invariant-path
+// `faces` profile) lifted from syntax to the standard-library overlap.
+//
+// Operations match specs/<category>/<op>.md one-for-one. Affine annotations on
+// the collection operations record where ownership/borrowing make AffineScript
+// a *stronger* conformer than a GC'd reference impl (see ALIB-INTEGRATION.md).
+//
+// Grouped by category with `// === … ===` banners rather than nested modules
+// so the file parses under the canonical grammar without relying on a module
+// system the stdlib has not yet settled.
+
+// === Arithmetic ===
+// Number is modelled as Float (the spec's "Number"); Std-lib overflow/NaN
+// behaviour is implementation-defined per each spec's Edge Cases.
+
+/// add: Number, Number -> Number   (commutative, associative, identity 0)
+fn add(a: Float, b: Float) -> Float { a + b }
+
+/// subtract: Number, Number -> Number   (identity 0; not commutative)
+fn subtract(a: Float, b: Float) -> Float { a - b }
+
+/// multiply: Number, Number -> Number   (commutative, associative, identity 1, zero 0)
+fn multiply(a: Float, b: Float) -> Float { a * b }
+
+/// divide: Number, Number -> Number   (division by zero is implementation-defined)
+fn divide(a: Float, b: Float) -> Float { a / b }
+
+/// modulo: Number, Number -> Number   (remainder; sign follows the spec vectors)
+fn modulo(a: Float, b: Float) -> Float { a % b }
+
+/// negate: Number -> Number   (negate(negate(a)) = a)
+fn negate(a: Float) -> Float { 0.0 - a }
+
+/// absolute: Number -> Number   (absolute(a) >= 0)
+fn absolute(a: Float) -> Float { if a < 0.0 { 0.0 - a } else { a } }
+
+/// max: Number, Number -> Number   (commutative, idempotent)
+fn max(a: Float, b: Float) -> Float { if a > b { a } else { b } }
+
+/// min: Number, Number -> Number   (commutative, idempotent)
+fn min(a: Float, b: Float) -> Float { if a < b { a } else { b } }
+
+// === Comparison ===
+// Return Bool. Operate on values that are Copy/borrowable (numbers here);
+// for affine element types these would take `&T` to avoid consuming.
+
+/// equal: A, A -> Bool   (reflexive, symmetric, transitive)
+fn equal(a: Float, b: Float) -> Bool { a == b }
+
+/// not_equal: A, A -> Bool   (not_equal(a, b) = !equal(a, b))
+fn not_equal(a: Float, b: Float) -> Bool { a != b }
+
+/// less_than: A, A -> Bool   (irreflexive, transitive)
+fn less_than(a: Float, b: Float) -> Bool { a < b }
+
+/// less_equal: A, A -> Bool   (reflexive, transitive)
+fn less_equal(a: Float, b: Float) -> Bool { a <= b }
+
+/// greater_than: A, A -> Bool   (irreflexive, transitive)
+fn greater_than(a: Float, b: Float) -> Bool { a > b }
+
+/// greater_equal: A, A -> Bool   (reflexive, transitive)
+fn greater_equal(a: Float, b: Float) -> Bool { a >= b }
+
+// === Logical ===
+
+/// and: Bool, Bool -> Bool   (commutative, associative, identity true, zero false)
+fn and(a: Bool, b: Bool) -> Bool { a && b }
+
+/// or: Bool, Bool -> Bool   (commutative, associative, identity false, zero true)
+fn or(a: Bool, b: Bool) -> Bool { a || b }
+
+/// not: Bool -> Bool   (involution: not(not(a)) = a)
+fn not(a: Bool) -> Bool { !a }
+
+// === Conditional ===
+
+/// if_then_else: Bool, T, T -> T
+/// Both branches have type T; under affine typing exactly one is consumed and
+/// the other is dropped — no leak, no double-use.
+fn if_then_else<T>(cond: Bool, then_val: T, else_val: T) -> T {
+  if cond { then_val } else { else_val }
+}
+
+// === String ===
+
+/// concat: String, String -> String   (associative, identity "")
+fn concat(a: String, b: String) -> String { a ++ b }
+
+/// length: String -> Int   (borrows; length("") = 0)
+fn str_length(s: &String) -> Int { String.length(s) }
+
+/// reverse: String -> String   (involution: reverse(reverse(s)) = s)
+fn reverse(s: String) -> String { String.reverse(s) }
+
+/// substring: String, Int, Int -> String   (s, start, len)
+fn substring(s: &String, start: Int, len: Int) -> String {
+  String.substring(s, start, len)
+}
+
+// === Collection ===
+// This is where AffineScript conforms *more strongly* than a GC reference:
+// ownership makes "consumed exactly once" and "no iterator invalidation"
+// type-level guarantees rather than runtime conventions.
+
+/// map: [T], (T -> U) -> [U]
+/// Affine: `list` is moved; each element is consumed exactly once by `f`.
+/// The source is inaccessible after the call (no use-after-map).
+fn map<T: affine, U>(list: [T], f: T -> U) -> [U] {
+  let result = [];
+  for x in list {        // list moved; x consumed once
+    result = result ++ [f(x)];
+  }
+  result
+}
+
+/// filter: [T], (&T -> Bool) -> [T]
+/// Affine: predicate *borrows* (`&T`) so it can inspect without consuming;
+/// kept elements are moved into the result, dropped elements are released.
+fn filter<T: affine>(list: [T], pred: &T -> Bool) -> [T] {
+  let result = [];
+  for x in list {
+    if pred(&x) { result = result ++ [x]; }  // x moved into result, else dropped
+  }
+  result
+}
+
+/// fold: [T], Acc, ((Acc, T) -> Acc) -> Acc
+/// Affine: accumulator threaded by ownership; each element consumed once.
+fn fold<T: affine, Acc>(list: [T], acc: Acc, f: (Acc, T) -> Acc) -> Acc {
+  let state = acc;
+  for x in list { state = f(state, x); }
+  state
+}
+
+/// contains: &[T], &T -> Bool   (requires Eq; borrows both, consumes neither)
+fn contains<T: Eq>(list: &[T], x: &T) -> Bool {
+  for y in list {              // borrowing iteration
+    if y == x { return true; }
+  }
+  false
+}
+
+/// length: &[T] -> Int   (borrows; length([]) = 0)
+fn length<T>(list: &[T]) -> Int { Array.length(list) }
+
+/// empty: &[T] -> Bool   (empty(xs) = (length(xs) == 0))
+fn empty<T>(list: &[T]) -> Bool { Array.length(list) == 0 }

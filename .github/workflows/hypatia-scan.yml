@@ -26,11 +26,11 @@ jobs:
           otp-version: '28.3'
       - name: Clone Hypatia
         run: |
-          if [ ! -d "$HOME/hypatia" ]; then
-            git clone https://github.com/hyperpolymath/hypatia.git "$HOME/hypatia"
+          if [ ! -d "$RUNNER_TEMP/hypatia" ]; then
+            git clone https://github.com/hyperpolymath/hypatia.git "$RUNNER_TEMP/hypatia"
           fi
       - name: Build Hypatia scanner (if needed)
-        working-directory: ${{ env.HOME }}/hypatia
+        working-directory: ${{ runner.temp }}/hypatia
         run: |
           if [ ! -f hypatia-v2 ]; then
             echo "Building hypatia-v2 scanner..."
@@ -44,7 +44,7 @@ jobs:
           echo "Scanning repository: ${{ github.repository }}"
 
           # Run scanner
-          HYPATIA_FORMAT=json "$HOME/hypatia/hypatia-cli.sh" scan . > hypatia-findings.json
+          HYPATIA_FORMAT=json "$RUNNER_TEMP/hypatia/hypatia-cli.sh" scan . > hypatia-findings.json
 
           # Count findings
           FINDING_COUNT=$(jq '. | length' hypatia-findings.json 2>/dev/null || echo 0)

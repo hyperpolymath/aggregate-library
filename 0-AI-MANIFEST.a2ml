@@ -1,0 +1,39 @@
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+# aggregate-library (aLib) — AI Manifest (Read First)
+
+aggregate-library is a **methods / conformance** repository: it specifies the
+minimal *overlap* shared by libraries across diverse systems (29 operations
+across arithmetic, comparison, logical, collection, string, conditional) as
+language-neutral specs plus executable YAML conformance vectors. It is NOT a
+standard library and has no blessed implementation — a system conforms by
+implementing the operations and passing the vectors.
+
+## Machine-readable artefacts
+
+Canonical project metadata lives in `.machine_readable/6a2/`:
+`STATE.a2ml`, `META.a2ml`, `ECOSYSTEM.a2ml`, `AGENTIC.a2ml`, `NEUROSYM.a2ml`,
+`PLAYBOOK.a2ml`.
+
+## Key paths
+
+- `specs/<category>/<op>.md` — the language-neutral specs + YAML conformance vectors.
+- `src/ALib.mres` (ReScript), `lib/` (Elixir), `src/affinescript/ALib.affine`
+  (AffineScript reference) — conformer reference shapes.
+- `docs/EXTENSION-LAYER.adoc` — aLib as the extension layer over the AffineScript
+  faces (faces unify *syntax* over one cube; aLib unifies a *library API* over
+  many cubes).
+- `scripts/` — Deno spec validator + conformance runner.
+
+## Core invariants
+
+1. Spec-first: update the vectors when changing specs.
+2. Conformance-tested: implementations are validated against the YAML vectors.
+3. Ecosystem-neutral: no blessed implementation; borrow the *method*, not the code.
+4. Reversibility: changes must be easy to evaluate and to undo.
+
+## Policy
+
+- Languages: AffineScript primary; Deno runtime; ReScript reference (legacy).
+- Licence: MPL-2.0 (code) / CC-BY-SA-4.0 (docs). PMPL is reserved estate-wide for
+  `palimpsest-license`, `palimpsest-plasma`, and `consent-aware-http` only.
+- Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>.

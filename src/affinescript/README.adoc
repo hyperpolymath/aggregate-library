@@ -1,0 +1,31 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell (hyperpolymath)
+= AffineScript conformer
+
+`ALib.affine` is the AffineScript reference shape for every aLib overlap
+operation, mirroring `specs/<category>/<op>.md` one-for-one (the same role
+`src/ALib.mres` plays for ReScript and `lib/` for Elixir).
+
+It is also the *extension-layer* conformer: AffineScript is one cube presented
+through six faces (RattleScript, JaffaScript, PseudoScript, LucidScript,
+CafeScripto, canonical). The faces are pure surface sugar that lower to these
+exact definitions, so conforming once here conforms for all six faces at the
+library level. See `docs/EXTENSION-LAYER.adoc` for the full argument and the
+faces gallery.
+
+== Affine angle
+
+The collection operations (`map`, `filter`, `fold`, `contains`, `length`,
+`empty`) carry affine/borrow annotations that make AffineScript a *stronger*
+conformer than a GC'd reference — "consumed exactly once" and "no iterator
+invalidation" become type-level guarantees rather than runtime conventions.
+The arithmetic, comparison, logical, conditional, and string operations are
+total pure functions and conform directly.
+
+== Caveat
+
+These are spec-level reference shapes. They are written to canonical
+AffineScript idiom and the aLib signatures; running them against the YAML
+vectors via `scripts/run-conformance-tests.ts` waits on the AffineScript
+stdlib + Deno bindings landing upstream in `affinescript`. Per aLib's
+methodology, implementations borrow the *method*, not the code.

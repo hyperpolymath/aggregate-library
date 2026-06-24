@@ -153,7 +153,7 @@ All new specification files must include SPDX headers:
 
 [source,markdown]
 ----
-<!-- SPDX-License-Identifier: MIT OR Palimpsest-0.8 -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 OR Palimpsest-0.8 -->
 <!-- SPDX-FileCopyrightText: 2025 Hyperpolymath -->
 ----
 

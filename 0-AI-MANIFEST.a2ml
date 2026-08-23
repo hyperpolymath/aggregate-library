@@ -17,7 +17,7 @@ Canonical project metadata lives in `.machine_readable/6a2/`:
 ## Key paths
 
 - `specs/<category>/<op>.md` — the language-neutral specs + YAML conformance vectors.
-- `src/ALib.mres` (ReScript), `lib/` (Elixir), `src/affinescript/ALib.affine`
+- `src/ALib.mres` (AffineScript), `lib/` (Elixir), `src/affinescript/ALib.affine`
   (AffineScript reference) — conformer reference shapes.
 - `docs/EXTENSION-LAYER.adoc` — aLib as the extension layer over the AffineScript
   faces (faces unify *syntax* over one cube; aLib unifies a *library API* over
@@ -33,7 +33,7 @@ Canonical project metadata lives in `.machine_readable/6a2/`:
 
 ## Policy
 
-- Languages: AffineScript primary; Deno runtime; ReScript reference (legacy).
+- Languages: AffineScript primary; Deno runtime; AffineScript reference (legacy).
 - Licence: MPL-2.0 (code) / CC-BY-SA-4.0 (docs). PMPL is reserved estate-wide for
   `palimpsest-license`, `palimpsest-plasma`, and `consent-aware-http` only.
 - Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>.

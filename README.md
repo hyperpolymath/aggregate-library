@@ -86,7 +86,7 @@ Ecosystem Common (implementation repos)
 
 </div>
 
-A practical shared layer for a specific ecosystem (example: ReScript +
+A practical shared layer for a specific ecosystem (example: AffineScript +
 Melange + optional runtime validation).
 
 </div>
@@ -103,8 +103,8 @@ These relationships are **optional** and **non-binding**:
 - `proven` — a reference implementation that can inform semantics intent
   and verification style (not required).
 
-- `alib-for-rescript` — an ecosystem implementation proving ground
-  (ReScript/Melange) that applies the aLib method (not required).
+- `alib-for-affinescript` — an ecosystem implementation proving ground
+  (AffineScript/Melange) that applies the aLib method (not required).
 
 - Implementation support repos (optional): conformance runners,
   codemods, interop pattern cookbooks.

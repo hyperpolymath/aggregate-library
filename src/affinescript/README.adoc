@@ -4,7 +4,7 @@
 
 `ALib.affine` is the AffineScript reference shape for every aLib overlap
 operation, mirroring `specs/<category>/<op>.md` one-for-one (the same role
-`src/ALib.mres` plays for ReScript and `lib/` for Elixir).
+`src/ALib.mres` plays for AffineScript and `lib/` for Elixir).
 
 It is also the *extension-layer* conformer: AffineScript is one cube presented
 through six faces (RattleScript, JaffaScript, PseudoScript, LucidScript,

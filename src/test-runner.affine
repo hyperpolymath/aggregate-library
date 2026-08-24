@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
-// Ported via Harvard Engine mechanical processor
+// Ported via Harvard Engine (Semantic pass)
 
 module test-runner;
 
-// TODO: Complete semantic implementation
-
-/* === ORIGINAL TYPESCRIPT CONTEXT ===
 // SPDX-License-Identifier: MPL-2.0
 // Conformance test runner for aggregate-library (aLib)
 // Validates language implementations against specification test cases
@@ -14,25 +11,25 @@ import { parse as parseYaml } from "@std/yaml";
 import { walk } from "@std/fs/walk";
 import { join, relative } from "@std/path";
 
-export interface TestCase {
+struct TestCase {
   input: unknown[];
   output: unknown;
   description: string;
 }
 
-export interface SpecTest {
+struct SpecTest {
   operation: string;
   category: string;
   signature: string;
   testCases: TestCase[];
 }
 
-export interface Implementation {
+struct Implementation {
   language: string;
   operations: Map<string, (...args: unknown[]) => unknown>;
 }
 
-export interface TestResult {
+struct TestResult {
   operation: string;
   category: string;
   testCase: number;
@@ -43,7 +40,7 @@ export interface TestResult {
   error?: string;
 }
 
-export interface ConformanceReport {
+struct ConformanceReport {
   language: string;
   totalTests: number;
   passed: number;
@@ -55,27 +52,27 @@ export interface ConformanceReport {
 /**
  * Extract test cases from a specification file
  */
-export async function extractTestCases(specPath: string): Promise<SpecTest | null> {
+async fn extractTestCases(specPath: string): SpecTest | null {
   try {
-    const content = await Deno.readTextFile(specPath);
-    const relativePath = relative(Deno.cwd(), specPath);
-    const parts = relativePath.split("/");
+    let content = await Deno.readTextFile(specPath);
+    let relativePath = relative(Deno.cwd(), specPath);
+    let parts = relativePath.split("/");
 
-    const operation = parts[parts.length - 1].replace(".md", "");
-    const category = parts[parts.length - 2];
+    let operation = parts[parts.length - 1].replace(".md", "");
+    let category = parts[parts.length - 2];
 
-    // Extract interface signature
-    const sigMatch = content.match(/## Interface Signature\s*```\s*\n([^`]+?)```/);
-    const signature = sigMatch ? sigMatch[1].trim() : "";
+    // Extract struct signature
+    let sigMatch = content.match(/## Interface Signature\s*```\s*\n([^`]+?)```/);
+    let signature = sigMatch ? sigMatch[1].trim() : "";
 
     // Extract YAML test cases
-    const yamlMatch = content.match(/```yaml\s+([\s\S]*?)```/);
+    let yamlMatch = content.match(/```yaml\s+([\s\S]*?)```/);
     if (!yamlMatch) {
       return null;
     }
 
-    const yamlContent = yamlMatch[1];
-    const parsed = parseYaml(yamlContent) as { test_cases?: TestCase[] };
+    let yamlContent = yamlMatch[1];
+    let parsed = parseYaml(yamlContent) as { test_cases?: TestCase[] };
 
     if (!parsed.test_cases) {
       return null;
@@ -96,15 +93,15 @@ export async function extractTestCases(specPath: string): Promise<SpecTest | nul
 /**
  * Load all test cases from specs directory
  */
-export async function loadAllTests(): Promise<Map<string, SpecTest>> {
-  const tests = new Map<string, SpecTest>();
-  const specsDir = join(Deno.cwd(), "specs");
+async fn loadAllTests(): Map<string, SpecTest> {
+  let tests = new Map<string, SpecTest>();
+  let specsDir = join(Deno.cwd(), "specs");
 
   for await (const entry of walk(specsDir, { exts: [".md"] })) {
     if (entry.isFile) {
-      const test = await extractTestCases(entry.path);
+      let test = await extractTestCases(entry.path);
       if (test) {
-        const key = `${test.category}/${test.operation}`;
+        let key = `${test.category}/${test.operation}`;
         tests.set(key, test);
       }
     }
@@ -116,10 +113,10 @@ export async function loadAllTests(): Promise<Map<string, SpecTest>> {
 /**
  * Run conformance tests for an implementation
  */
-export async function runConformanceTests(
+async fn runConformanceTests(
   implementation: Implementation,
   tests: Map<string, SpecTest>
-): Promise<ConformanceReport> {
+): ConformanceReport {
   const results: TestResult[] = [];
   let totalTests = 0;
   let passed = 0;
@@ -127,7 +124,7 @@ export async function runConformanceTests(
   let skipped = 0;
 
   for (const [key, spec] of tests) {
-    const implFunc = implementation.operations.get(key);
+    let implFunc = implementation.operations.get(key);
 
     if (!implFunc) {
       // Skip if implementation doesn't provide this operation
@@ -150,12 +147,12 @@ export async function runConformanceTests(
 
     // Run each test case
     for (let i = 0; i < spec.testCases.length; i++) {
-      const testCase = spec.testCases[i];
+      let testCase = spec.testCases[i];
       totalTests++;
 
       try {
-        const actual = implFunc(...testCase.input);
-        const testPassed = deepEqual(actual, testCase.output);
+        let actual = implFunc(...testCase.input);
+        let testPassed = deepEqual(actual, testCase.output);
 
         results.push({
           operation: spec.operation,
@@ -201,7 +198,7 @@ export async function runConformanceTests(
 /**
  * Deep equality check for test results
  */
-function deepEqual(a: unknown, b: unknown): boolean {
+fn deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
   if (a === null || b === null) return false;
   if (typeof a !== typeof b) return false;
@@ -212,8 +209,8 @@ function deepEqual(a: unknown, b: unknown): boolean {
   }
 
   if (typeof a === "object" && typeof b === "object") {
-    const keysA = Object.keys(a as object);
-    const keysB = Object.keys(b as object);
+    let keysA = Object.keys(a as object);
+    let keysB = Object.keys(b as object);
     if (keysA.length !== keysB.length) return false;
     return keysA.every((key) =>
       deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])
@@ -226,7 +223,7 @@ function deepEqual(a: unknown, b: unknown): boolean {
 /**
  * Print conformance report to console
  */
-export function printReport(report: ConformanceReport): void {
+fn printReport(report: ConformanceReport): void {
   console.log("\n" + "=".repeat(70));
   console.log(`📋 Conformance Report: ${report.language}`);
   console.log("=".repeat(70));
@@ -237,7 +234,7 @@ export function printReport(report: ConformanceReport): void {
   console.log(`Success rate: ${((report.passed / report.totalTests) * 100).toFixed(1)}%`);
 
   // Group results by category
-  const byCategory = new Map<string, TestResult[]>();
+  let byCategory = new Map<string, TestResult[]>();
   for (const result of report.results) {
     if (!byCategory.has(result.category)) {
       byCategory.set(result.category, []);
@@ -247,15 +244,15 @@ export function printReport(report: ConformanceReport): void {
 
   // Print results by category
   for (const [category, results] of Array.from(byCategory.entries()).sort()) {
-    const categoryPassed = results.filter((r) => r.passed).length;
-    const categoryTotal = results.length;
-    const status = categoryPassed === categoryTotal ? "✅" : "⚠️";
+    let categoryPassed = results.filter((r) => r.passed).length;
+    let categoryTotal = results.length;
+    let status = categoryPassed === categoryTotal ? "✅" : "⚠️";
 
     console.log(`\n${status} ${category}/ (${categoryPassed}/${categoryTotal})`);
 
     for (const result of results) {
       if (!result.passed) {
-        const statusIcon = result.error ? "⏭️" : "❌";
+        let statusIcon = result.error ? "⏭️" : "❌";
         console.log(`  ${statusIcon} ${result.operation} #${result.testCase}: ${result.description}`);
         if (result.error) {
           console.log(`     Error: ${result.error}`);
@@ -308,16 +305,15 @@ if (import.meta.main) {
 
   console.log("🧪 Running aLib conformance tests...\n");
 
-  const tests = await loadAllTests();
+  let tests = await loadAllTests();
   console.log(`Loaded ${tests.size} operation specifications with ${Array.from(tests.values()).reduce((sum, t) => sum + t.testCases.length, 0)} test cases\n`);
 
-  const report = await runConformanceTests(jsImplementation, tests);
+  let report = await runConformanceTests(jsImplementation, tests);
   printReport(report);
 
-  // Exit with error code if any tests failed
+  // Exit with error code if unknown tests failed
   if (report.failed > 0) {
     Deno.exit(1);
   }
 }
 
-==================================== */

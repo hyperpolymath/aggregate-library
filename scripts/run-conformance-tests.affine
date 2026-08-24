@@ -1,3 +1,11 @@
+// SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine mechanical processor
+
+module run-conformance-tests;
+
+// TODO: Complete semantic implementation
+
+/* === ORIGINAL TYPESCRIPT CONTEXT ===
 #!/usr/bin/env -S deno run --allow-read
 // SPDX-License-Identifier: MPL-2.0
 // Run conformance tests for aggregate-library implementations
@@ -216,3 +224,5 @@ if (import.meta.main) {
     Deno.exit(1);
   }
 }
+
+==================================== */

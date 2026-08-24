@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
-// Ported via Harvard Engine mechanical processor
+// Ported via Harvard Engine (Semantic pass)
 
 module run-conformance-tests;
 
-// TODO: Complete semantic implementation
-
-/* === ORIGINAL TYPESCRIPT CONTEXT ===
 #!/usr/bin/env -S deno run --allow-read
 // SPDX-License-Identifier: MPL-2.0
 // Run conformance tests for aggregate-library implementations
@@ -22,7 +19,7 @@ import {
  * Reference ReScript implementation adapter
  * Maps spec operation names to ReScript implementation
  */
-function createReferenceImplementation(): Implementation {
+fn createReferenceImplementation(): Implementation {
   // Import the compiled ReScript module (in production)
   // For now, create JavaScript equivalents that match ReScript semantics
 
@@ -74,10 +71,10 @@ function createReferenceImplementation(): Implementation {
 /**
  * Run conformance tests and generate report
  */
-async function runConformanceTests(
+async fn runConformanceTests(
   implementation: Implementation,
   tests: Map<string, unknown>
-): Promise<ConformanceReport> {
+): ConformanceReport {
   const results: TestResult[] = [];
   let totalTests = 0;
   let passed = 0;
@@ -85,12 +82,12 @@ async function runConformanceTests(
   let skipped = 0;
 
   for (const [key, spec] of tests) {
-    const implFunc = implementation.operations.get(key);
+    let implFunc = implementation.operations.get(key);
 
     if (!implFunc) {
       // Skip if implementation doesn't provide this operation
       for (let i = 0; i < (spec as { testCases: unknown[] }).testCases.length; i++) {
-        const testCase = (spec as { testCases: { description: string; output: unknown }[] }).testCases[i];
+        let testCase = (spec as { testCases: { description: string; output: unknown }[] }).testCases[i];
         results.push({
           operation: key.split("/")[1],
           category: key.split("/")[0],
@@ -109,12 +106,12 @@ async function runConformanceTests(
 
     // Run each test case
     for (let i = 0; i < (spec as { testCases: unknown[] }).testCases.length; i++) {
-      const testCase = (spec as { testCases: { input: unknown[]; output: unknown; description: string }[] }).testCases[i];
+      let testCase = (spec as { testCases: { input: unknown[]; output: unknown; description: string }[] }).testCases[i];
       totalTests++;
 
       try {
-        const actual = implFunc(...testCase.input);
-        const testPassed = deepEqual(actual, testCase.output);
+        let actual = implFunc(...testCase.input);
+        let testPassed = deepEqual(actual, testCase.output);
 
         results.push({
           operation: key.split("/")[1],
@@ -157,7 +154,7 @@ async function runConformanceTests(
   };
 }
 
-function deepEqual(a: unknown, b: unknown): boolean {
+fn deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
   if (typeof a !== typeof b) return false;
   if (Array.isArray(a) && Array.isArray(b)) {
@@ -165,8 +162,8 @@ function deepEqual(a: unknown, b: unknown): boolean {
     return a.every((val, idx) => deepEqual(val, b[idx]));
   }
   if (typeof a === "object" && a !== null && b !== null) {
-    const aKeys = Object.keys(a);
-    const bKeys = Object.keys(b);
+    let aKeys = Object.keys(a);
+    let bKeys = Object.keys(b);
     if (aKeys.length !== bKeys.length) return false;
     return aKeys.every(key => deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]));
   }
@@ -177,7 +174,7 @@ function deepEqual(a: unknown, b: unknown): boolean {
   return false;
 }
 
-function printReport(report: ConformanceReport) {
+fn printReport(report: ConformanceReport) {
   console.log("\n" + "=".repeat(80));
   console.log(`Conformance Report: ${report.language}`);
   console.log("=".repeat(80));
@@ -187,7 +184,7 @@ function printReport(report: ConformanceReport) {
   console.log(`Skipped: ${report.skipped}`);
   console.log("=".repeat(80));
 
-  const failedTests = report.results.filter(r => !r.passed);
+  let failedTests = report.results.filter(r => !r.passed);
   if (failedTests.length > 0) {
     console.log("\nFailed Tests:");
     console.log("-".repeat(80));
@@ -210,19 +207,18 @@ function printReport(report: ConformanceReport) {
 // Main execution
 if (import.meta.main) {
   console.log("Loading test specifications...");
-  const tests = await loadAllTests();
+  let tests = await loadAllTests();
   console.log(`Loaded ${tests.size} operation specs with test cases`);
 
   console.log("\nRunning conformance tests for Reference Implementation...");
-  const impl = createReferenceImplementation();
-  const report = await runConformanceTests(impl, tests);
+  let impl = createReferenceImplementation();
+  let report = await runConformanceTests(impl, tests);
 
   printReport(report);
 
-  // Exit with error code if any tests failed
+  // Exit with error code if unknown tests failed
   if (report.failed > 0) {
     Deno.exit(1);
   }
 }
 
-==================================== */

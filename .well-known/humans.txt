@@ -18,10 +18,10 @@ Inspiration: Cross-language interoperability pioneers
 
 /* TECHNOLOGY */
 
-Languages: ReScript, Rust, Gleam, Deno, Guile Scheme
+Languages: AffineScript, Rust, Gleam, Deno, Guile Scheme
 Configuration: Nickel, YAML
 Documentation: AsciiDoc, Markdown
-Build System: Just, Guix, Nix
+Build System: Just, Guix, Guix
 Containers: Podman, OCI
 Version Control: Git
 Hosting: GitHub

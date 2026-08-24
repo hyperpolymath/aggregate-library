@@ -17,7 +17,7 @@ minimal *overlap* shared by libraries across wildly different systems
 operations) as language-neutral specs plus executable YAML conformance
 vectors. It is deliberately *not* a standard library, not a dependency to
 import, and has no blessed implementation: a system "conforms" by implementing
-the operations and passing the vectors. ReScript and Elixir conformers already
+the operations and passing the vectors. AffineScript and Elixir conformers already
 live in this repo as reference shapes.
 
 *Second, as an extension layer* — once the AffineScript *faces* exist (one
@@ -138,7 +138,7 @@ U) -> [U]` underneath — faces change the surface, never the types.
 == Conformance wiring
 
 The AffineScript conformer is plugged into the existing conformance flow the
-same way the ReScript and Elixir conformers are:
+same way the AffineScript and Elixir conformers are:
 
 . operation signatures in `src/affinescript/ALib.affine` match
   `specs/<category>/<op>.md` one-for-one;

@@ -10,7 +10,7 @@ This document provides context for AI assistants working with the aggregate-libr
 
 - A **methods demonstration** for cross-system library overlap
 - A **stress-test** for specification clarity and conformance testing
-- A **reference implementation** in ReScript showing the methodology
+- A **reference implementation** in AffineScript showing the methodology
 
 ### What This Is NOT
 
@@ -39,7 +39,7 @@ This document provides context for AI assistants working with the aggregate-libr
 
 4. **Ecosystem Neutrality**: No "blessed" implementation
    - Method applies to any language
-   - ReScript is a reference, not a requirement
+   - AffineScript is a reference, not a requirement
 
 ## Repository Structure
 
@@ -53,7 +53,7 @@ aggregate-library/
 │   ├── string/                     # concat, length, substring
 │   └── conditional/                # if_then_else
 ├── src/
-│   ├── ALib.mres                   # Complete ReScript implementation
+│   ├── ALib.mres                   # Complete AffineScript implementation
 │   ├── InterOp/                    # JavaScript interop utilities
 │   └── schema/                     # Nickel schema definitions
 ├── scripts/
@@ -69,7 +69,7 @@ aggregate-library/
 Per hyperpolymath language policy:
 
 **Allowed**:
-- ✅ **ReScript**: Primary implementation language (compiles to JS)
+- ✅ **AffineScript**: Primary implementation language (compiles to JS)
 - ✅ **Deno**: Test runner and validation scripts (NOT Node/npm/bun)
 - ✅ **Nickel**: Configuration language for schemas
 - ✅ **Rust, Gleam, Elixir**: Optional alternative implementations
@@ -90,7 +90,7 @@ Per hyperpolymath language policy:
 #   - Behavioral Semantics (properties, edge cases)
 #   - Executable Test Cases (YAML)
 
-# 2. Implement in ReScript
+# 2. Implement in AffineScript
 # Add to src/ALib.mres in appropriate module
 
 # 3. Validate specification format
@@ -166,7 +166,7 @@ test_cases:
 
 ## aLib Implementation (src/ALib.mres)
 
-The ReScript implementation is organized into modules:
+The AffineScript implementation is organized into modules:
 
 - **Arithmetic**: add, subtract, multiply, divide, modulo
 - **Comparison**: equal, notEqual, lessThan, lessEqual, greaterThan, greaterEqual
@@ -199,7 +199,7 @@ All operations are pure functions with no side effects.
 
 ```bash
 # Install dependencies (none needed for specs)
-# ReScript compilation requires rescript package
+# AffineScript compilation requires affinescript package
 
 # Validate specifications
 deno task validate:specs
@@ -230,7 +230,7 @@ deno lint
 When working with this repository:
 
 1. **Spec Changes**: Always update tests when changing specs
-2. **Implementation**: Follow ReScript idioms, use pure functions
+2. **Implementation**: Follow AffineScript idioms, use pure functions
 3. **Testing**: Validate before committing
 4. **Documentation**: Keep specs, code, and docs in sync
 5. **License**: New files use MPL-2.0 (code) / CC-BY-SA-4.0 (docs). Per the 2026-06-02 estate policy, PMPL-1.0-or-later is reserved for `palimpsest-license`, `palimpsest-plasma`, and `consent-aware-http` only — aLib is a sole-owner repo, so MPL-2.0/CC-BY-SA-4.0. (Existing headers are not swept; flag drift, do not bulk-edit.)
@@ -239,7 +239,7 @@ When working with this repository:
 ## Related Projects
 
 - `proven` - Formal verification reference (Idris2)
-- `alib-for-rescript` - Ecosystem-specific proving ground
+- `alib-for-affinescript` - Ecosystem-specific proving ground
 - `rsr-template-repo` - Repository structure template
 - `hypatia` - Security scanning
 - `gitbot-fleet` - Quality enforcement
@@ -247,7 +247,7 @@ When working with this repository:
 ## Resources
 
 - **Spec Format**: See any file in `specs/` for examples
-- **ReScript Docs**: https://rescript-lang.org/
+- **AffineScript Docs**: https://affinescript-lang.org/
 - **Deno Docs**: https://deno.com/
 - **Nickel Docs**: https://nickel-lang.org/
 

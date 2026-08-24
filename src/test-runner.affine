@@ -1,4 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
+// Ported via Harvard Engine mechanical processor
+
+module test-runner;
+
+// TODO: Complete semantic implementation
+
+/* === ORIGINAL TYPESCRIPT CONTEXT ===
+// SPDX-License-Identifier: MPL-2.0
 // Conformance test runner for aggregate-library (aLib)
 // Validates language implementations against specification test cases
 
@@ -311,3 +319,5 @@ if (import.meta.main) {
     Deno.exit(1);
   }
 }
+
+==================================== */

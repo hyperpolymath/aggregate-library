@@ -298,6 +298,3 @@ For questions about reversibility:
 
 *Remember*: _If it can’t be undone easily, reconsider if it should be
 done at all._
-
-*Version*: 1.0.0 *Last Updated*: 2025-11-22 *Next Review*: 2026-02-22 (3
-months)

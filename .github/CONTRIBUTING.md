@@ -7,7 +7,7 @@ this cross-language Common Library specification.
 ## Code of Conduct
 
 This project adheres to a Code of Conduct (see
-[CODE_OF_CONDUCT.adoc](CODE_OF_CONDUCT.adoc)). By participating, you
+[CODE_OF_CONDUCT.adoc](../CODE_OF_CONDUCT.adoc)). By participating, you
 agree to uphold this code. Please report unacceptable behavior to the
 maintainers.
 
@@ -134,7 +134,7 @@ This project follows the TPCF model with three contribution perimeters:
 
 - **Scope**: Governance decisions, release management, security
 
-- **Process**: See [GOVERNANCE.adoc](GOVERNANCE.adoc)
+- **Process**: See [GOVERNANCE.adoc](../GOVERNANCE.adoc)
 
 ## Development Process
 

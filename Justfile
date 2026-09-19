@@ -127,7 +127,7 @@ docs-required:
     @test -f LICENSE.txt || (echo "❌ Missing LICENSE.txt" && exit 1)
     @test -f CLAUDE.md || (echo "❌ Missing CLAUDE.md" && exit 1)
     @test -f SPEC_FORMAT.md || (echo "❌ Missing SPEC_FORMAT.md" && exit 1)
-    @test -f CONTRIBUTING.md -o -f CONTRIBUTING.adoc || (echo "❌ Missing CONTRIBUTING.md or CONTRIBUTING.adoc" && exit 1)
+    @test -f CONTRIBUTING.md -o -f .github/CONTRIBUTING.md || (echo "❌ Missing CONTRIBUTING.md or .github/CONTRIBUTING.md" && exit 1)
     @test -f CODE_OF_CONDUCT.md || (echo "❌ Missing CODE_OF_CONDUCT.md" && exit 1)
     @test -f SECURITY.md || (echo "❌ Missing SECURITY.md" && exit 1)
     @test -f MAINTAINERS.md || (echo "❌ Missing MAINTAINERS.md" && exit 1)
@@ -166,7 +166,7 @@ rsr-documentation:
     @(test -f README.md || test -f README.adoc) && echo "  ✅ README" || echo "  ❌ README"
     @test -f LICENSE.txt && echo "  ✅ LICENSE.txt" || echo "  ❌ LICENSE.txt"
     @test -f SECURITY.md && echo "  ✅ SECURITY.md" || echo "  ❌ SECURITY.md"
-    @(test -f CONTRIBUTING.md || test -f CONTRIBUTING.adoc) && echo "  ✅ CONTRIBUTING" || echo "  ❌ CONTRIBUTING"
+    @(test -f CONTRIBUTING.md || test -f .github/CONTRIBUTING.md) && echo "  ✅ CONTRIBUTING" || echo "  ❌ CONTRIBUTING"
     @test -f CODE_OF_CONDUCT.md && echo "  ✅ CODE_OF_CONDUCT.md" || echo "  ❌ CODE_OF_CONDUCT.md"
     @test -f MAINTAINERS.md && echo "  ✅ MAINTAINERS.md" || echo "  ❌ MAINTAINERS.md"
     @(test -f CHANGELOG.md || test -f CHANGELOG.adoc) && echo "  ✅ CHANGELOG" || echo "  ❌ CHANGELOG"
@@ -183,7 +183,7 @@ rsr-infrastructure:
 rsr-metadata:
     @echo "📦 RSR Metadata:"
     @grep -q "Dual MIT / Palimpsest" LICENSE.txt && echo "  ✅ Dual license (MIT + Palimpsest)" || echo "  ⚠️  License check"
-    @(grep -q "TPCF" CONTRIBUTING.md 2>/dev/null || grep -q "TPCF" CONTRIBUTING.adoc 2>/dev/null) && echo "  ✅ TPCF Perimeter designation" || echo "  ⚠️  TPCF designation"
+    @(grep -q "TPCF" CONTRIBUTING.md 2>/dev/null || grep -q "TPCF" .github/CONTRIBUTING.md 2>/dev/null) && echo "  ✅ TPCF Perimeter designation" || echo "  ⚠️  TPCF designation"
     @test -d specs && echo "  ✅ Specification directory" || echo "  ❌ specs/ directory"
 
 # Show RSR compliance level

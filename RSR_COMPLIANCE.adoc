@@ -4,6 +4,10 @@
 *🏆 GOLD (Full Compliance)* *Date*: 2025-11-22 *Framework*: Rhodium
 Standard Repository (RSR)
 
+NOTE: This report records the repository as of its date, when it had 22
+operations. An earlier revision of it said 20, a mis-sum of the same list.
+The current count is 29; see the README section "The operations".
+
 === Executive Summary
 
 The aggregate-library project has achieved *GOLD level RSR compliance
@@ -113,7 +117,7 @@ agreement implicit (dual license)
 
 ==== 6. Testing (8/10) ✅
 
-*Test Coverage:* - ✅ 20 operation specifications - ✅ Test cases for
+*Test Coverage:* - ✅ 22 operation specifications - ✅ Test cases for
 each operation (YAML format) - ✅ Edge case coverage - ✅ Validation
 recipes in Justfile - ⚠️ No automated test execution (specification
 repo)
@@ -179,7 +183,7 @@ number (0.1.0) - ✅ License information - ✅ Author/maintainer
 information - ✅ Repository URL - ✅ TPCF Perimeter designation
 
 *Additional Metadata:* - ✅ Target languages documented (7) - ✅
-Operation count (20) - ✅ Category organization - ✅ Changelog with
+Operation count (22) - ✅ Category organization - ✅ Changelog with
 history - ⚠️ No formal package metadata (not a package)
 
 *Discoverability:* - Clear project naming - Comprehensive README -
@@ -279,8 +283,8 @@ just rsr           # RSR compliance check
 ==== Validation Results
 
 ....
-✅ Specifications: 20/20 present and valid
-✅ Test Cases: 20/20 operations have tests
+✅ Specifications: 22/22 present and valid
+✅ Test Cases: 22/22 operations have tests
 ✅ Documentation: 9/9 required files present
 ✅ .well-known: 3/3 files present
 ✅ Infrastructure: Justfile with 30+ recipes

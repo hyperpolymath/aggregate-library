@@ -11,7 +11,7 @@
 // all six faces at the library level — the same-cube property (invariant-path
 // `faces` profile) lifted from syntax to the standard-library overlap.
 //
-// Operations match specs/<category>/<op>.md one-for-one. Affine annotations on
+// Operations match specs/<category>/<op>.adoc one-for-one. Affine annotations on
 // the collection operations record where ownership/borrowing make AffineScript
 // a *stronger* conformer than a GC'd reference impl (see ALIB-INTEGRATION.md).
 //
@@ -103,9 +103,13 @@ fn str_length(s: &String) -> Int { String.length(s) }
 /// reverse: String -> String   (involution: reverse(reverse(s)) = s)
 fn reverse(s: String) -> String { String.reverse(s) }
 
-/// substring: String, Int, Int -> String   (s, start, len)
-fn substring(s: &String, start: Int, len: Int) -> String {
-  String.substring(s, start, len)
+/// substring: String, Int, Int -> String   (s, start, end)
+/// Zero-based; `start` inclusive, `end` exclusive: the half-open range
+/// [start, end). The third argument is an index, not a length. Defined on
+/// 0 <= start <= end <= length(s); outside that domain see the spec's
+/// "Out-of-range arguments" (affinescript's `String.substring` clamps).
+fn substring(s: &String, start: Int, end: Int) -> String {
+  String.substring(s, start, end)
 }
 
 // === Collection ===

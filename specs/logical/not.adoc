@@ -33,8 +33,8 @@ test_cases:
     output: true
     description: "Negation of false is true"
 
-  - input: [true]
+  - input: ["not(true)"]
     output: true
     description: "Double negation returns original value: not(not(true)) = true"
-    note: "Demonstrates double negation property"
+    note: "Demonstrates double negation property. The argument is a condition expression (see vectors/GRAMMAR.adoc): it is evaluated to false first, so the call is not(false)."
 ----

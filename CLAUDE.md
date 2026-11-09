@@ -45,12 +45,12 @@ This document provides context for AI assistants working with the aggregate-libr
 
 ```
 aggregate-library/
-├── specs/                          # Specification files (22 operations)
-│   ├── arithmetic/                 # add, subtract, multiply, divide, modulo
+├── specs/                          # Specification files (29 operations, .adoc)
+│   ├── arithmetic/                 # add, subtract, multiply, divide, modulo, negate, absolute, max, min
 │   ├── comparison/                 # equal, not_equal, less_than, etc.
 │   ├── logical/                    # and, or, not
-│   ├── collection/                 # map, filter, fold, contains
-│   ├── string/                     # concat, length, substring
+│   ├── collection/                 # map, filter, fold, contains, length, empty
+│   ├── string/                     # concat, length, substring, reverse
 │   └── conditional/                # if_then_else
 ├── src/
 │   ├── ALib.mres                   # Complete AffineScript implementation
@@ -59,6 +59,7 @@ aggregate-library/
 ├── scripts/
 │   ├── validate-specs.ts           # Spec format validator (Deno)
 │   └── run-conformance-tests.ts    # Conformance test runner (Deno)
+├── vectors/                        # Spec test vectors as JSON (generated) + GRAMMAR.adoc
 ├── test/                           # Implementation tests
 ├── deno.json                       # Deno configuration
 └── Justfile                        # Command runner
@@ -85,7 +86,7 @@ Per hyperpolymath language policy:
 
 ```bash
 # 1. Create specification file
-# specs/<category>/<operation>.md with:
+# specs/<category>/<operation>.adoc with:
 #   - Interface Signature
 #   - Behavioral Semantics (properties, edge cases)
 #   - Executable Test Cases (YAML)

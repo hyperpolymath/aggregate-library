@@ -3,7 +3,7 @@
 = AffineScript conformer
 
 `ALib.affine` is the AffineScript reference shape for every aLib overlap
-operation, mirroring `specs/<category>/<op>.md` one-for-one (the same role
+operation, mirroring `specs/<category>/<op>.adoc` one-for-one (the same role
 `src/ALib.mres` plays for AffineScript and `lib/` for Elixir).
 
 It is also the *extension-layer* conformer: AffineScript is one cube presented
@@ -39,6 +39,17 @@ The stdlib impl is missing 7 spec operations: `absolute`, `negate`, `max`,
 (its `length` is string-only). Adding those to `stdlib/alib.affine` would make
 the runnable stdlib fully aLib-spec-conformant; until then this reference
 covers the gap.
+
+`substring` takes `(s, start, end)`: zero-based, `start` inclusive, `end`
+exclusive (see `specs/string/substring.adoc`). This file delegates to
+affinescript's `stdlib/string.affine` `substring(s, start, end)`, which has
+that contract. At affinescript `9167b04`, `stdlib/alib.affine` instead
+documents aLib's `substring` as `(s, start, length)` and passes the third
+argument to `string_sub` as a length. That disagrees with the spec. Because
+`string_sub` clamps, the length reading still passes most vectors, but it
+fails `["hello", 1, 4]` (expected `"ell"`, gives `"ello"`) and
+`["hello", 2, 2]` (expected `""`, gives `"ll"`). That needs an upstream fix in
+`affinescript`, not here.
 
 == Caveat
 

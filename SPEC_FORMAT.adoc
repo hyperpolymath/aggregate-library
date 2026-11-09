@@ -87,6 +87,14 @@ test_cases:
     description: "Addition of zeros"
 ----
 
+`+input+` is either a list with one argument per signature parameter, or
+a mapping with one key per parameter in signature order. An argument of a
+`+Function[...]+` type is a lambda string such as `+"x => add(x, 1)"+`; an
+argument of type `+Boolean+` may be a condition string such as
+`+"equal(5, 5)"+`. `+vectors/GRAMMAR.adoc+` defines both. After changing
+any test case, run `+just vectors+` to regenerate `+vectors/*.json+`;
+`+just validate+` fails until the export matches.
+
 === What is NOT Included
 
 To keep the specification minimal and cross-paradigm, the following are
@@ -118,38 +126,46 @@ language-dependent)
 
 === File Organization
 
-Specifications are organized by category:
+Specifications are organized by category, one AsciiDoc file per
+operation (29 in all):
 
 ....
 specs/
 ├── arithmetic/
-│   ├── add.md
-│   ├── subtract.md
-│   ├── multiply.md
-│   ├── divide.md
-│   └── modulo.md
+│   ├── absolute.adoc
+│   ├── add.adoc
+│   ├── divide.adoc
+│   ├── max.adoc
+│   ├── min.adoc
+│   ├── modulo.adoc
+│   ├── multiply.adoc
+│   ├── negate.adoc
+│   └── subtract.adoc
 ├── comparison/
-│   ├── less_than.md
-│   ├── greater_than.md
-│   ├── equal.md
-│   ├── not_equal.md
-│   ├── less_equal.md
-│   └── greater_equal.md
+│   ├── equal.adoc
+│   ├── greater_equal.adoc
+│   ├── greater_than.adoc
+│   ├── less_equal.adoc
+│   ├── less_than.adoc
+│   └── not_equal.adoc
 ├── logical/
-│   ├── and.md
-│   ├── or.md
-│   └── not.md
+│   ├── and.adoc
+│   ├── not.adoc
+│   └── or.adoc
 ├── string/
-│   ├── concat.md
-│   ├── length.md
-│   └── substring.md
+│   ├── concat.adoc
+│   ├── length.adoc
+│   ├── reverse.adoc
+│   └── substring.adoc
 ├── collection/
-│   ├── map.md
-│   ├── filter.md
-│   ├── fold.md
-│   └── contains.md
+│   ├── contains.adoc
+│   ├── empty.adoc
+│   ├── filter.adoc
+│   ├── fold.adoc
+│   ├── length.adoc
+│   └── map.adoc
 └── conditional/
-    └── if_then_else.md
+    └── if_then_else.adoc
 ....
 
 === Example: Complete Specification

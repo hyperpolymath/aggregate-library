@@ -150,7 +150,7 @@ pattern matching
 
 ==== 1. The Common Library is Nearly IDENTICAL
 
-The 20 operations from hypothetical languages are *all present* in real
+The 22 operations of the v0.1.0 core (from hypothetical languages) are *all present* in real
 languages too!
 
 *Hypothetical Common Library*: - Arithmetic (5): add, subtract,
@@ -159,7 +159,9 @@ multiply, divide, modulo ✅ - Comparison (6): lt, gt, eq, neq, lte, gte
 substring ✅ - Collection (4): map, filter, fold, contains ✅ -
 Conditional (1): if_then_else ✅
 
-*Result*: *20/20 operations match!*
+*Result*: *22/22 operations match!* (This analysis predates the seven
+operations added after v0.1.0; it covers the 22-operation core only. An
+earlier revision said 20, a mis-sum of the list above.)
 
 ==== 2. Real Languages Are MORE Divergent in Practice
 
@@ -204,14 +206,14 @@ maplist(double, [1,2,3], [2,4,6]).
 % "if_then_else" is (Condition -> Then ; Else)
 ----
 
-Yet even Prolog has equivalents to all 20 operations!
+Yet even Prolog has equivalents to all 22 operations!
 
 === Conclusion: Validation of Original Analysis
 
 ==== The Hypothetical Languages Were REALISTIC
 
 The 7 hypothetical languages, despite being "`radically different`",
-actually converge on the *same 20 operations* as 7 real, radically
+actually converge on the *same 22 operations* as 7 real, radically
 different languages.
 
 This suggests:
@@ -219,7 +221,7 @@ This suggests:
 [arabic]
 . *Universal Primitives Exist*: There really is a minimal set of
 operations that transcends paradigms
-. *20 Operations is About Right*: Neither too minimal nor too expansive
+. *22 Operations is About Right*: Neither too minimal nor too expansive
 . *Differences Lie Elsewhere*: Languages differ in type systems,
 effects, evaluation, not primitives
 

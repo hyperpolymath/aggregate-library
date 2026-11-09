@@ -48,6 +48,19 @@ distinguishes integers from decimals must take that distinction from the
 parameter type, not from the JSON spelling; the spec YAML keeps the original
 spelling.
 
+The exporter (`scripts/export-vectors.sh`) writes JSON with jq, which is not a
+JCS serialiser, so it only accepts values whose jq spelling is already the JCS
+spelling. It rejects, and the export fails on: an integer with
+`|n| > 2^53 - 1` (outside I-JSON), a fraction with `|n| < 1e-4` (jq writes
+`1e-05` where JCS writes `0.00001`), NaN, and a string containing U+007F (jq
+escapes it, JCS does not). A spec needing such a value needs a JCS serialiser
+first, such as the `hyperpolymath/ijson-jcs` CLI; when that CLI is on `PATH`
+the exporter also runs `ijson-jcs check --profile estate-file` on its output.
+
+A boolean-typed argument must be JSON `true`, `false` or a condition string;
+`null`, numbers and other values are rejected. Each spec's signature name must
+equal its file name (`add.adoc` declares `add: ...`).
+
 == Argument kinds
 
 Every argument is plain data except in two cases, both decided by the declared

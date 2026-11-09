@@ -79,11 +79,16 @@ def check_condition($ops):
   | {t: $t, i: 0} | expr([]; $ops)
   | if .i != ($t | length) then error("trailing tokens in condition") else . end;
 
+# The parameter list before "=>" must alternate identifier, ",", identifier,
+# ...: it starts and ends with an identifier and never has two commas or two
+# identifiers in a row (so ", acc x" and "acc,, x" are rejected).
 def check_lambda($arity; $ops):
   tokens as $t
   | ([$t | indices("=>")[]] | first // error("lambda has no =>")) as $p
-  | [$t[0:$p][] | select(. != ",")] as $params
-  | if ($t[0:$p] | length) != (2 * ($params | length) - 1)
+  | $t[0:$p] as $pl
+  | [$pl | to_entries[] | select(.key % 2 == 0) | .value] as $params
+  | if ($pl | length) % 2 != 1
+       or any($pl | to_entries[]; (.key % 2 == 1) != (.value == ","))
        or any($params[]; (is_ident | not) or . == "true" or . == "false" or (. as $x | any($ops[]; . == $x)))
     then error("bad lambda parameter list") else . end
   | if ($params | length) != $arity
@@ -97,9 +102,40 @@ def check_arg($ty; $ops):
     if type != "string" then error("a Function argument must be a lambda string")
     else check_lambda($ty | function_arity; $ops) end
   elif $ty == "Boolean" and type == "string" then check_condition($ops)
+  elif $ty == "Boolean" and type != "boolean"
+  then error("a Boolean argument must be true, false or a condition string, not \(tojson)")
   else . end;
 
+# Every number and string in a vector must be one the exporter writes in JCS
+# (RFC 8785) form, because jq, which writes the JSON, is not a JCS serialiser:
+# - Numbers: jq writes the shortest round-trip digits, as JCS does, but
+#   switches to exponent form (1e-05, 1e+20) far earlier than ECMAScript
+#   Number::toString (which JCS uses) does, and it cannot hold integers beyond
+#   2^53 - 1, which I-JSON (RFC 7493) also excludes.
+# - Strings: jq escapes U+007F (DEL) as \u007f; JCS writes it raw.
+# Rather than write a wrong canonical form, reject such values; the
+# hyperpolymath/ijson-jcs tool is the authority if a vector ever needs one. In
+# practice: integers need |n| <= 2^53 - 1, a fraction needs |n| >= 1e-4, and
+# a string must not contain U+007F.
+def check_jcs:
+  . as $v
+  | [$v | .. | numbers] | map(
+    if isnan then error("number NaN is not I-JSON")
+    elif fabs > 9007199254740991
+    then error("number \(.) is outside the I-JSON integer range +/-(2^53 - 1)")
+    elif (. + 0 | tojson | test("[eE]"))
+    then error("number \(. + 0 | tojson) would be written in exponent form, which is not its JCS form; the exporter cannot canonicalise it")
+    else . end)
+  | [$v | .. | strings | select(test("\u007f"))]
+  | if length > 0
+    then error("string \(.[0] | tojson) contains U+007F, which jq does not write in JCS form")
+    else . end;
+
 ($sig | parse_signature) as $s
+| ($src | split("/") | last | rtrimstr(".adoc")) as $stem
+| (if $s.name != $stem
+   then error("\($src): signature names \"\($s.name)\" but the file is \"\($stem).adoc\"")
+   else . end)
 | ($doc.test_cases // error("\($src): no test_cases")) as $tc
 | (if ($tc | length) == 0 then error("\($src): no vectors") else . end)
 | ($tc[0].input | if type == "object" then keys_unsorted else null end) as $names
@@ -108,6 +144,7 @@ def check_arg($ty; $ops):
     | try (
         if ($v | has("input") and has("output") and has("description")) | not
         then error("needs input, output and description") else . end
+        | ($v | check_jcs)
         | if ($v.input | type) == "array" then
             if $names != null then error("input shape differs from vector 1") else . end
             | if ($v.input | length) != ($s.params | length)

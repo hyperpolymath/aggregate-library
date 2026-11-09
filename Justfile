@@ -21,6 +21,7 @@ help:
 # Validate all specifications for format compliance
 validate:
     @echo "Validating specifications..."
+    @just deps
     @just validate-specs
     @just validate-yaml
     @just validate-links
@@ -44,7 +45,16 @@ validate-specs:
 # vectors/GRAMMAR.adoc (done by the vector export, so this is vectors-check)
 validate-yaml:
     @echo "Validating YAML test cases..."
+    @just vectors-test
     @just vectors-check
+
+# Regression tests for the vector checks (bad inputs rejected, good accepted)
+vectors-test:
+    @test/vectors-guards.sh
+
+# Check validate's tools: jq >= 1.7 and yq (mikefarah v4 or kislyuk)
+deps:
+    @scripts/export-vectors.sh --tools
 
 # Regenerate vectors/<category>.json from the spec YAML blocks
 vectors:
@@ -324,7 +334,7 @@ check: validate test docs rsr
 watch:
     @echo "Watching for changes... (Ctrl+C to stop)"
     @echo "Requires: entr (brew install entr or apt install entr)"
-    @find specs scripts -name "*.adoc" -o -name "*.sh" -o -name "*.jq" | entr -c just validate
+    @find specs scripts vectors -name "*.adoc" -o -name "*.sh" -o -name "*.jq" -o -name "*.json" | entr -c just validate
 
 # Setup development environment
 setup:
@@ -332,6 +342,7 @@ setup:
     @echo "  Checking dependencies..."
     @command -v just >/dev/null 2>&1 || echo "  ⚠️  Install 'just' command runner"
     @command -v git >/dev/null 2>&1 && echo "  ✅ git" || echo "  ❌ git required"
+    @scripts/export-vectors.sh --tools >/dev/null 2>&1 && echo "  ✅ jq >= 1.7 and a supported yq" || { echo "  ❌ jq >= 1.7 and yq (mikefarah v4 or kislyuk) required by just validate:"; scripts/export-vectors.sh --tools 2>&1 | sed "s/^/     /"; }
     @echo ""
     @echo "Recommended tools:"
     @echo "  - yamllint (for YAML validation)"

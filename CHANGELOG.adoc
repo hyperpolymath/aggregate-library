@@ -23,6 +23,11 @@ not a length, the conformance domain `+0 ≤ start ≤ end ≤ length(s)+`, and
 what a conformer may do outside it. Two boundary vectors added.
 * The AffineScript conformer's `+substring+` takes `+(s, start, end)+`, as
 the spec does, instead of `+(s, start, len)+`.
+* `+string/length+` and `+string/substring+`: the character unit is now
+defined as the Unicode scalar value (it was implementation-defined), so a
+substring index can never split a UTF-8 or UTF-16 encoding. Non-ASCII
+vectors added: `+length("é") = 1+`, `+substring("éa", 0, 1) = "é"+`,
+`+substring("éa", 1, 2) = "a"+`.
 
 ==== Added
 
@@ -32,6 +37,15 @@ for lambda and condition strings), `+scripts/export-vectors.sh+`, and the
 `+just vectors+` / `+just vectors-check+` recipes. `+just validate+` now
 fails if the exported vectors drift from the specs, if a vector's arity
 does not match its signature, or if a lambda or condition is malformed.
+The exporter also rejects a signature whose name differs from its file
+name, a lambda parameter list that does not alternate identifier and comma,
+a Boolean argument that is neither a Boolean nor a condition string, and any
+number or string jq cannot write in JCS form (exponent-form numbers,
+integers beyond 2^53 - 1, NaN, U+007F); `+ijson-jcs check+` runs on the
+output when that CLI is on `+PATH+`. `+test/vectors-guards.sh+`
+(`+just vectors-test+`, part of `+just validate+`) covers each rejection
+with a positive control. `+just deps+` and `+just setup+` require jq 1.7 or
+later and a supported yq.
 
 ==== Fixed
 

@@ -15,10 +15,16 @@ index range `+[start, end)+`.
 of the first character to include (*inclusive*) - `+end+`: Zero-based
 index one past the last character to include (*exclusive*)
 
-*Indexing*: Indices are zero-based integers. They count characters in
-the same unit that `+length+` (`+specs/string/length.adoc+`) counts. The
-second and third arguments are both indices (`+start+` and `+end+`); the
-third argument is *not* a length.
+*Indexing*: Indices are zero-based integers that count Unicode scalar
+values, the character unit `+length+` defines
+(`+specs/string/length.adoc+`): index `+i+` is the boundary after the
+first `+i+` scalar values. Every integer `+0 ≤ i ≤ length(s)+` is therefore a
+boundary between whole characters, so no in-domain call can split a
+character (in particular, never the middle of a multi-byte UTF-8
+sequence or a UTF-16 surrogate pair). A conformer whose native indexing
+counts UTF-8 bytes or UTF-16 code units converts scalar-value indices to
+its own offsets. The second and third arguments are both indices
+(`+start+` and `+end+`); the third argument is *not* a length.
 
 *Return Value*: A new string containing the characters of `+s+` at
 indices `+start+`, `+start + 1+`, …, `+end - 1+`. When
@@ -39,11 +45,15 @@ these calls, and portable code MUST NOT depend on either behaviour.
 `+substring(s, i, i) = ""+` for every `+0 ≤ i ≤ length(s)+` (empty
 substring) - `+length(substring(s, start, end)) = subtract(end, start)+`
 - `+concat(substring(s, 0, i), substring(s, i, length(s))) = s+` for
-every `+0 ≤ i ≤ length(s)+`
+every `+0 ≤ i ≤ length(s)+` (every index and length here counts scalar
+values)
 
-*Edge Cases*: - What counts as one character (code point, grapheme
-cluster, byte) is implementation-defined, exactly as for `+length+`;
-all test cases use ASCII so the choice does not affect them
+*Edge Cases*: - Non-ASCII text: `+substring("éa", 0, 1) = "é"+` (with a
+precomposed `+U+00E9+`), because `+"é"+` is one scalar value even though
+it is two UTF-8 bytes; a byte-indexed result (an invalid half of
+`+"é"+`) does not conform - A combining sequence such as `+e+` followed by
+`+U+0301+` is two scalar values, so an index may fall between them;
+grapheme clusters are not protected
 
 === Executable Test Cases
 
@@ -81,4 +91,12 @@ test_cases:
   - input: ["", 0, 0]
     output: ""
     description: "Only in-domain call on the empty string"
+
+  - input: ["\u00E9a", 0, 1]
+    output: "\u00E9"
+    description: "Indices count scalar values: the two-byte U+00E9 is one character"
+
+  - input: ["\u00E9a", 1, 2]
+    output: "a"
+    description: "Index 1 is the boundary after U+00E9, not inside its UTF-8 encoding"
 ----

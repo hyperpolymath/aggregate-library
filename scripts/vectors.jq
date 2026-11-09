@@ -10,6 +10,7 @@
 #         --argjson doc YAML_AS_JSON -f scripts/vectors.jq
 # Any violation stops the export with an error naming the spec and vector.
 
+# Remove leading and trailing whitespace from the input string.
 def trim: gsub("^\\s+|\\s+$"; "");
 
 # Split a type list at commas that are not inside [...].
@@ -35,6 +36,9 @@ def split_arrow:
   | { params: ($cs[0:$r.at] | implode | split_top_commas),
       result: ($cs[$r.at + 2:] | implode | trim) };
 
+# Parse a signature string into {name, params, result}, with trimmed type
+# strings. A missing top-level arrow raises an error; a non-matching name
+# prefix produces no output.
 def parse_signature:
   (capture("^(?<name>[a-z_]+):\\s*(?<rest>.+)$")
     // error("signature is not \"name: params -> result\""))
@@ -53,9 +57,13 @@ def tokens:
     then error("unrecognised character in \"\($s)\"") else . end
   | $ms | map(.captures[0].string);
 
+# Whether the input string has identifier syntax; reserved names also match.
 def is_ident: test("^[A-Za-z_][A-Za-z0-9_]*$");
 
 # expr over {t: tokens, i: position}; $env = bound parameter names.
+# Return the state with i advanced past one expression. Raise an error for
+# invalid syntax, unbound names or calls outside $ops (known operation names).
+# Call arity and result types are not checked; trailing tokens are left unread.
 def expr($env; $ops):
   def args:
     if .t[.i] == "," then .i += 1 | expr($env; $ops) | args
@@ -74,6 +82,9 @@ def expr($env; $ops):
       else error("unbound identifier \($tok)") end
     else error("unexpected token \($tok)") end;
 
+# Validate the whole input expression string with no bound identifiers and
+# $ops as the allowed call names. Return parser state on success; lexical,
+# expression and trailing-token errors propagate without evaluating it.
 def check_condition($ops):
   tokens as $t
   | {t: $t, i: 0} | expr([]; $ops)
@@ -82,6 +93,9 @@ def check_condition($ops):
 # The parameter list before "=>" must alternate identifier, ",", identifier,
 # ...: it starts and ends with an identifier and never has two commas or two
 # identifiers in a row (so ", acc x" and "acc,, x" are rejected).
+# $arity is the required parameter count; $ops lists allowed call names, which
+# cannot be parameter names. Return parser state after the whole lambda body;
+# raise an error for invalid parameters or arity, or propagate parsing errors.
 def check_lambda($arity; $ops):
   tokens as $t
   | ([$t | indices("=>")[]] | first // error("lambda has no =>")) as $p
@@ -97,6 +111,10 @@ def check_lambda($arity; $ops):
   | if .i != ($t | length) then error("trailing tokens in lambda body") else . end;
 
 # Check one argument against its declared parameter type.
+# Function arguments must be lambda strings; Boolean arguments must be Boolean
+# values or condition strings. Other types pass through without validation.
+# Return parser state for strings that are checked, otherwise the input value;
+# type mismatches and expression validation errors propagate to the caller.
 def check_arg($ty; $ops):
   if ($ty | startswith("Function[")) then
     if type != "string" then error("a Function argument must be a lambda string")

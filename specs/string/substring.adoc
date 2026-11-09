@@ -99,4 +99,12 @@ test_cases:
   - input: ["\u00E9a", 1, 2]
     output: "a"
     description: "Index 1 is the boundary after U+00E9, not inside its UTF-8 encoding"
+
+  - input: ["e\u0301a", 0, 1]
+    output: "e"
+    description: "Index 1 splits the combining sequence e + U+0301: grapheme clusters are not protected"
+
+  - input: ["\U0001D11Ea", 1, 2]
+    output: "a"
+    description: "Index 1 is the boundary after U+1D11E, not inside its UTF-16 surrogate pair"
 ----

@@ -25,7 +25,10 @@
 # U+007F. A spec that needs one of those fails the export loudly; it is never
 # written in a wrong "canonical" form. When the ijson-jcs CLI
 # (hyperpolymath/ijson-jcs) is on PATH, every generated file is also checked
-# with `ijson-jcs check --profile estate-file`, and a failure stops the export.
+# against the estate on-disk rule (JCS bytes plus exactly one final LF), and a
+# failure stops the export: with `ijson-jcs check --profile estate-file` where
+# the installed tool supports it, else with its default `check` plus a final-LF
+# check (see below).
 #
 # Needs jq >= 1.7 and a yq: mikefarah's Go yq (the estate's choice) or
 # kislyuk's jq wrapper. Exit codes: 0 ok, 1 drift or invalid spec,
@@ -50,10 +53,24 @@ for tool in jq yq; do
   fi
 done
 
-# jq >= 1.7: the filters use features (and number handling) of 1.7.
+# jq >= 1.7: the filters use features (and number handling) of 1.7. A release
+# build reports "jq-1.7.1"; a build from a checkout without release tags
+# reports "jq-<branch>-<commit>", which names no release. For those, a
+# behaviour probe decides instead: pick/1 is a builtin new in jq 1.7.
 jq_version="$(jq --version 2>&1 | sed -n 's/^jq-\([0-9][0-9]*\)\.\([0-9][0-9]*\).*/\1 \2/p')"
-if [ -z "$jq_version" ] || ! { read -r jq_major jq_minor <<<"$jq_version"
-     [ "$jq_major" -gt 1 ] || { [ "$jq_major" -eq 1 ] && [ "$jq_minor" -ge 7 ]; }; }; then
+if [ -n "$jq_version" ]; then
+  read -r jq_major jq_minor <<<"$jq_version"
+  if [ "$jq_major" -gt 1 ] || { [ "$jq_major" -eq 1 ] && [ "$jq_minor" -ge 7 ]; }; then
+    jq_ok=1
+  else
+    jq_ok=0
+  fi
+elif [ "$(jq -n -c '{a: 1, b: 2} | pick(.a)' 2>/dev/null)" = '{"a":1}' ]; then
+  jq_ok=1
+else
+  jq_ok=0
+fi
+if [ "$jq_ok" -ne 1 ]; then
   printf 'export-vectors: need jq >= 1.7, found "%s"\n' "$(jq --version 2>&1)" >&2
   exit 2
 fi
@@ -142,11 +159,40 @@ if [ "$status" -ne 0 ]; then
   exit 1
 fi
 
-# Independent JCS check when the estate tool is available.
+# Independent JCS check when the estate tool is available. `--profile` is newer
+# than the first ijson-jcs releases, which reject it as an unknown option with
+# exit 2, the same code as an invalid file. So probe the installed tool on a
+# known-good file first, instead of reading a usage error as "not JCS". An older
+# tool gets its default (tolerant) `check`, which accepts JCS bytes with or
+# without one final LF; requiring the final LF as well gives the estate-file
+# rule.
 if command -v ijson-jcs >/dev/null 2>&1; then
-  if ! ijson-jcs check --profile estate-file "$out"/*.json >&2; then
-    printf 'export-vectors: generated JSON is not JCS (ijson-jcs check); nothing written\n' >&2
+  probe="$out/.probe"
+  printf '{}\n' >"$probe"
+  if ijson-jcs check --profile estate-file "$probe" >/dev/null 2>&1; then
+    jcs_check=(ijson-jcs check --profile estate-file)
+    lf_check=0
+  elif ijson-jcs check "$probe" >/dev/null 2>&1; then
+    jcs_check=(ijson-jcs check)
+    lf_check=1
+  else
+    printf 'export-vectors: the ijson-jcs on PATH (%s) does not accept "check FILE"; update it from hyperpolymath/ijson-jcs or take it off PATH\n' \
+      "$(ijson-jcs --version 2>&1 | head -n 1)" >&2
+    exit 2
+  fi
+  rm -f "$probe"
+  if ! "${jcs_check[@]}" "$out"/*.json >&2; then
+    printf 'export-vectors: generated JSON is not JCS (%s); nothing written\n' "${jcs_check[*]}" >&2
     exit 1
+  fi
+  if [ "$lf_check" -eq 1 ]; then
+    for f in "$out"/*.json; do
+      # $(...) drops a final LF, so this is empty only when the last byte is LF.
+      if [ -n "$(tail -c 1 "$f")" ]; then
+        printf 'export-vectors: %s does not end in a line feed; nothing written\n' "$(basename "$f")" >&2
+        exit 1
+      fi
+    done
   fi
 else
   printf 'export-vectors: note: ijson-jcs not on PATH; JCS form rests on the scripts/vectors.jq guards\n' >&2

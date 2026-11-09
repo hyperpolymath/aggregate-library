@@ -63,4 +63,12 @@ test_cases:
   - input: ["\u00E9"]
     output: 1
     description: "Non-ASCII character (U+00E9, two UTF-8 bytes) counts as one scalar value"
+
+  - input: ["e\u0301"]
+    output: 2
+    description: "Decomposed e + U+0301 is two scalar values: not one grapheme cluster, not normalised"
+
+  - input: ["\U0001D11E"]
+    output: 1
+    description: "Supplementary-plane U+1D11E (two UTF-16 code units, four UTF-8 bytes) counts as one scalar value"
 ----

@@ -17,6 +17,55 @@ https://semver.org/spec/v2.0.0.html[Semantic Versioning].
 * Deduplicated documentation: removed duplicate `+.adoc+`/`+.md+` pairs,
 keeping the richer copy in each case (`+CONTRIBUTING.adoc+`;
 `+CHANGELOG.md+`, `+CODE_OF_CONDUCT.md+`, `+MAINTAINERS.md+`).
+* `+string/substring+`: the spec now states zero-based indices, `+start+`
+inclusive and `+end+` exclusive, that the third argument is an index and
+not a length, the conformance domain `+0 ≤ start ≤ end ≤ length(s)+`, and
+what a conformer may do outside it. Two boundary vectors added.
+* The AffineScript conformer's `+substring+` takes `+(s, start, end)+`, as
+the spec does, instead of `+(s, start, len)+`.
+* `+string/length+` and `+string/substring+`: the character unit is now
+defined as the Unicode scalar value (it was implementation-defined), so a
+substring index can never split a UTF-8 or UTF-16 encoding. Non-ASCII
+vectors added: `+length("é") = 1+`, `+substring("éa", 0, 1) = "é"+`,
+`+substring("éa", 1, 2) = "a"+`. Further vectors pin the unit against
+grapheme-cluster and UTF-16 counting: `+length("e\u0301") = 2+`,
+`+substring("e\u0301a", 0, 1) = "e"+`, `+length("\u{1D11E}") = 1+`,
+`+substring("\u{1D11E}a", 1, 2) = "a"+`.
+
+==== Added
+
+* `+vectors/<category>.json+`: the spec test vectors exported as I-JSON in
+JCS form, with `+vectors/GRAMMAR.adoc+` (JSON layout and an EBNF grammar
+for lambda and condition strings), `+scripts/export-vectors.sh+`, and the
+`+just vectors+` / `+just vectors-check+` recipes. `+just validate+` now
+fails if the exported vectors drift from the specs, if a vector's arity
+does not match its signature, or if a lambda or condition is malformed.
+The exporter also rejects a signature whose name differs from its file
+name, a lambda parameter list that does not alternate identifier and comma,
+a Boolean argument that is neither a Boolean nor a condition string, and any
+number or string jq cannot write in JCS form (exponent-form numbers,
+integers beyond 2^53 - 1, NaN, U+007F); `+ijson-jcs check+` runs on the
+output when that CLI is on `+PATH+` (with `+--profile estate-file+` where the
+installed version supports it, else its default check plus a final-LF
+check). `+test/vectors-guards.sh+`
+(`+just vectors-test+`, part of `+just validate+`) covers each rejection
+with a positive control. `+just deps+` and `+just setup+` require jq 1.7 or
+later and a supported yq; a jq built from an untagged checkout, whose
+version string names no release, is accepted when it has the 1.7 builtin
+`+pick+`.
+
+==== Fixed
+
+* `+logical/not+` vector 3 expected `+not(true)+` to be `+true+`. It now
+passes the condition `+"not(true)"+`, so it tests double negation as its
+description says.
+* Justfile: the spec recipes globbed `+specs/*/*.md+`, but the specs are
+`+.adoc+`, so `+just validate+` and `+just test+` always failed. The
+per-category recipes now list all 29 specs and fail on a missing or extra
+file; `+validate-specs+` checks AsciiDoc headings and stops at the first
+bad spec instead of only reporting the last one.
+* Operation counts (29 / 22 / 20) reconciled; see the README section "The
+operations".
 
 ==== Planned
 
@@ -41,7 +90,8 @@ not_equal, less_equal, greater_equal
 * *Collection Operations* (4): map, filter, fold (reduce), contains
 * *Conditional Operations* (1): if_then_else
 
-Total: 20 core operations across 6 categories
+Total: 22 core operations across 6 categories (an earlier revision of
+this entry said 20, which mis-summed the list above)
 
 ===== Documentation
 
@@ -140,7 +190,8 @@ Community announcement posted
 
 ==== v1.0.0 Criteria
 
-To reach 1.0.0, we need: - Complete specifications for all 20 operations
+To reach 1.0.0, we need: - Complete specifications for every operation
+(29 at present)
 - At least 3 verified implementations (different languages) - Community
 review and feedback incorporated - Stability period (6+ months with no
 breaking changes) - Production usage in real projects - Comprehensive

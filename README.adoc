@@ -63,6 +63,47 @@ A practical shared layer for a specific ecosystem (example: AffineScript
 
 This repo covers only the first meaning.
 
+== The operations
+
+The overlap is defined by the spec files under `+specs/+`: one file per
+operation, *29 operations in 6 categories*. `+just list+` prints them and
+`+just test+` fails if a category gains or loses a file without the
+Justfile being updated.
+
+[cols="1,1,4",options="header"]
+|===
+|Category |Count |Operations
+|arithmetic |9 |add, subtract, multiply, divide, modulo, negate, absolute, max, min
+|comparison |6 |equal, not_equal, less_than, less_equal, greater_than, greater_equal
+|logical |3 |and, or, not
+|string |4 |concat, length, substring, reverse
+|collection |6 |map, filter, fold, contains, length, empty
+|conditional |1 |if_then_else
+|*total* |*29* |
+|===
+
+Older figures you may meet elsewhere:
+
+* *22* is the v0.1.0 core (2025-11-22): every operation above except
+negate, absolute, max, min, string `+reverse+`, collection `+length+` and
+`+empty+`. `+data/aggregate.json+` is a dated snapshot of that core, and
+affinescript's runnable `+stdlib/alib.affine+` implements those 22.
+* *20* was a mis-sum of the same 22-operation list (5 + 6 + 3 + 3 + 4 + 1).
+It has been corrected wherever it appeared.
+
+== Test vectors
+
+Each spec ends with executable test cases in YAML (156 vectors across the
+29 operations). For conformers that should not parse AsciiDoc, the same
+vectors are exported to `+vectors/<category>.json+` (I-JSON, JCS form).
+`+vectors/GRAMMAR.adoc+` gives the JSON layout and the grammar of the
+lambda and condition strings that some vectors use.
+
+* `+just vectors+` regenerates `+vectors/*.json+` from the specs.
+* `+just vectors-check+` fails if the committed JSON differs from what the
+specs generate; `+just validate+` runs it. Both need `+jq+` (1.7 or later)
+and `+yq+`.
+
 == Reference implementations and optional consumers
 
 Some projects may serve as *reference points* for semantics,
@@ -138,8 +179,8 @@ julia cli.jl merge \
   --output ../../lib/aggregate_library
 ----
 
-See link:tools/stdlib-merger/README.md[stdlib-merger README] and
-link:tools/stdlib-merger/ARCHITECTURE.md[ARCHITECTURE] for details.
+See link:tools/stdlib-merger/README.adoc[stdlib-merger README] and
+link:tools/stdlib-merger/ARCHITECTURE.adoc[ARCHITECTURE] for details.
 
 == Contents
 
@@ -150,7 +191,8 @@ Collections, FileIO, Stream, Time)
 * `+lib/a_lib/+` — Compiler utilities (Token, Position, Error,
 AST.Traversal, StringUtils, ColorOutput)
 * `+specs/+` — Specifications (arithmetic, comparison, logical,
-collection, string operations)
+collection, string, conditional operations)
+* `+vectors/+` — The spec test vectors exported as JSON, plus their grammar
 * `+scripts/+` — Validation tools (Deno)
 * `+COMPOSITION-GUIDE.md+` — Detailed methodology and integration
 examples

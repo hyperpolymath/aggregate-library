@@ -1,0 +1,136 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
+= aLib test vectors: JSON export and expression grammar
+
+The executable test cases in `specs/<category>/<op>.adoc` are the source of
+truth. `scripts/export-vectors.sh` exports them to `vectors/<category>.json`
+so that a conformer in any language can read them without parsing AsciiDoc or
+YAML. Do not edit the JSON by hand: change the spec, run
+`just vectors`, and commit both. `just vectors-check` fails when the
+JSON no longer matches the specs.
+
+== JSON layout
+
+Each file is one I-JSON (RFC 7493) document in JCS (RFC 8785) form: keys
+sorted, no insignificant whitespace, one final newline.
+
+----
+{ "category":   "<category directory name>",
+  "format":     "alib-vectors-1",
+  "operations": [ <operation>, ... ] }        // sorted by spec file name
+
+<operation> = {
+  "name":       "<op>",
+  "signature":  "<op>: P1, ..., Pn -> R",     // verbatim from the spec
+  "parameters": [ { "type": "P1" }, ... ]     // positional input, or
+              | [ { "name": "k1", "type": "P1" }, ... ],  // keyed input
+  "result":     "R",
+  "source":     "specs/<category>/<op>.adoc",
+  "vectors":    [ <vector>, ... ] }           // in spec order
+
+<vector> = {
+  "input":       [ arg1, ..., argn ]          // positional
+               | { "k1": arg1, ..., "kn": argn },  // keyed
+  "output":      <expected result>,
+  "description": "<text>",
+  "note":        "<text>" }                   // optional
+----
+
+A positional input lists one argument per signature parameter, in order. A
+keyed input names one argument per signature parameter; `parameters[i].name`
+gives the key of the *i*-th parameter, because JCS sorts the keys in the
+vector itself. A list-typed argument is itself a JSON list, so the one
+argument of `empty` and `length` is written `[[1, 2, 3]]`.
+
+Numbers are IEEE 754 doubles, as I-JSON requires. JCS writes each in its
+shortest form, so a spec literal `4.0` is exported as `4`. A conformer that
+distinguishes integers from decimals must take that distinction from the
+parameter type, not from the JSON spelling; the spec YAML keeps the original
+spelling.
+
+The exporter (`scripts/export-vectors.sh`) writes JSON with jq, which is not a
+JCS serialiser, so it only accepts values whose jq spelling is already the JCS
+spelling. It rejects, and the export fails on: an integer with
+`|n| > 2^53 - 1` (outside I-JSON), a fraction with `|n| < 1e-4` (jq writes
+`1e-05` where JCS writes `0.00001`), NaN, and a string containing U+007F (jq
+escapes it, JCS does not). A spec needing such a value needs a JCS serialiser
+first, such as the `hyperpolymath/ijson-jcs` CLI; when that CLI is on `PATH`
+the exporter also runs `ijson-jcs check --profile estate-file` on its output.
+
+A boolean-typed argument must be JSON `true`, `false` or a condition string;
+`null`, numbers and other values are rejected. Each spec's signature name must
+equal its file name (`add.adoc` declares `add: ...`).
+
+== Argument kinds
+
+Every argument is plain data except in two cases, both decided by the declared
+parameter type in `parameters`:
+
+. *Lambda.* An argument whose type is `Function[...]` is a string in the
+  `lambda` syntax below. The number of lambda parameters equals the number of
+  parameter types inside `Function[...]` (`map` and `filter`: one; `fold`:
+  two, accumulator first).
+. *Condition.* An argument whose type is `Boolean` is either a JSON `true` or
+  `false`, or a string in the `condition` syntax below. A conformer evaluates
+  the condition to a Boolean and then calls the operation with that value.
+  `if_then_else` (`condition`) and `not` (vector 3) use this form.
+
+Any other string is literal String data: `"hello"` passed to `length` is
+the five-character string, never an expression. No Boolean-typed parameter
+takes literal String data, so the rule is unambiguous.
+
+== Grammar
+
+ISO/IEC 14977 EBNF. Whitespace (space, tab) may appear between any two
+tokens and is otherwise insignificant.
+
+[source,ebnf]
+----
+lambda     = params, "=>", expr ;
+params     = identifier, { ",", identifier } ;
+condition  = expr ;
+
+expr       = call | literal | identifier ;
+call       = operation, "(", [ expr, { ",", expr } ], ")" ;
+
+operation  = name ;            (* one of the operation names in specs/ *)
+identifier = name ;            (* bound by the enclosing lambda's params *)
+name       = letter, { letter | digit } ;
+
+literal    = boolean | number | string ;
+boolean    = "true" | "false" ;
+number     = [ "-" ], digit, { digit }, [ ".", digit, { digit } ] ;
+string     = '"', { character - ( '"' | "\" ) }, '"' ;
+
+letter     = ? an ASCII letter, A to Z or a to z ? | "_" ;
+digit      = ? an ASCII digit, 0 to 9 ? ;
+----
+
+Static rules beyond the syntax:
+
+* An `operation` is a call target only. It must be the name of a spec
+  under `specs/` (the file name without `.adoc`).
+* An `identifier` must be one of the enclosing lambda's `params`. A
+  condition has no parameters, so it contains no identifiers.
+* A lambda parameter must not be `true`, `false`, or an operation name.
+* `length` names two operations (`string/length` and
+  `collection/length`); a call resolves by the type of its argument. No
+  current vector calls `length` inside an expression.
+
+`scripts/export-vectors.sh` enforces the syntax and these static rules for
+every lambda and condition, and that every vector's arity matches its
+signature. It does not type-check expressions: that a condition yields a
+Boolean, for example, is left to the conformer.
+
+== Examples
+
+[cols="1,2,1",options="header"]
+|===
+|Spec |Argument |Kind
+|`collection/map` |`"x => multiply(x, 2)"` |lambda, one parameter
+|`collection/filter` |`"x => equal(modulo(x, 2), 0)"` |lambda, nested calls
+|`collection/fold` |`"acc, x => add(acc, x)"` |lambda, two parameters
+|`collection/filter` |`"x => true"` |lambda, constant body
+|`conditional/if_then_else` |`"greater_than(3, 5)"` |condition
+|`logical/not` |`"not(true)"` |condition
+|===

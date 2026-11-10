@@ -34,7 +34,7 @@ constraints
 clearly marked
 . *No Network Operations*: All operations are offline-first and air-gap
 compatible
-. *Minimal Attack Surface*: Only 20 core operations with well-defined
+. *Minimal Attack Surface*: Only 29 operations with well-defined
 semantics
 
 ==== Implementation Guidance

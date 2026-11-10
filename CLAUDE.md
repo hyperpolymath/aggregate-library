@@ -45,23 +45,25 @@ This document provides context for AI assistants working with the aggregate-libr
 
 ```
 aggregate-library/
-├── specs/                          # Specification files (22 operations)
-│   ├── arithmetic/                 # add, subtract, multiply, divide, modulo
+├── specs/                          # Specification files (29 operations, .adoc)
+│   ├── arithmetic/                 # add, subtract, multiply, divide, modulo, negate, absolute, max, min
 │   ├── comparison/                 # equal, not_equal, less_than, etc.
 │   ├── logical/                    # and, or, not
-│   ├── collection/                 # map, filter, fold, contains
-│   ├── string/                     # concat, length, substring
+│   ├── collection/                 # map, filter, fold, contains, length, empty
+│   ├── string/                     # concat, length, substring, reverse
 │   └── conditional/                # if_then_else
 ├── src/
 │   ├── ALib.mres                   # Complete AffineScript implementation
 │   ├── InterOp/                    # JavaScript interop utilities
 │   └── schema/                     # Nickel schema definitions
 ├── scripts/
-│   ├── validate-specs.ts           # Spec format validator (Deno)
-│   └── run-conformance-tests.ts    # Conformance test runner (Deno)
+│   ├── export-vectors.sh           # specs YAML -> vectors/*.json (+ --check drift gate)
+│   ├── vectors.jq                  # Vector record builder + GRAMMAR.adoc checks
+│   ├── run_conformance.sh          # Per-language runner stubs (oblibeny, wokelang, eclexia)
+│   └── *.affine                    # Ported validator/runner sources; not yet runnable
+├── vectors/                        # Spec test vectors as JSON (generated) + GRAMMAR.adoc
 ├── test/                           # Implementation tests
-├── deno.json                       # Deno configuration
-└── Justfile                        # Command runner
+└── Justfile                        # Command runner (just validate, just vectors-check)
 ```
 
 ## Technology Stack
@@ -85,7 +87,7 @@ Per hyperpolymath language policy:
 
 ```bash
 # 1. Create specification file
-# specs/<category>/<operation>.md with:
+# specs/<category>/<operation>.adoc with:
 #   - Interface Signature
 #   - Behavioral Semantics (properties, edge cases)
 #   - Executable Test Cases (YAML)
@@ -93,11 +95,13 @@ Per hyperpolymath language policy:
 # 2. Implement in AffineScript
 # Add to src/ALib.mres in appropriate module
 
-# 3. Validate specification format
-deno task validate:specs
+# 3. Validate the spec format, its YAML vectors, and regenerate vectors/
+just vectors          # rewrite vectors/<category>.json from the specs
+just validate         # spec format + vector grammar + drift check
 
-# 4. Run conformance tests
-deno task test
+# 4. Conformance tests: no AffineScript conformance runner is available yet
+#    (scripts/*.affine are unported sources). Run your implementation
+#    against vectors/<category>.json by hand or with your own harness.
 
 # 5. Update documentation
 # Update README.adoc with new operation
@@ -106,11 +110,10 @@ deno task test
 ### 2. Running Validations
 
 ```bash
-# Validate all specs
+# Validate all specs (format, YAML vectors, vectors/ drift)
 just validate
 
-# Run conformance tests
-deno task test
+# Conformance tests: no AffineScript conformance runner is available yet
 
 # Check everything
 just check
@@ -198,23 +201,16 @@ All operations are pure functions with no side effects.
 ## Common Tasks
 
 ```bash
-# Install dependencies (none needed for specs)
-# AffineScript compilation requires affinescript package
+# Check tool dependencies (just, git, jq >= 1.7, a supported yq)
+just setup
 
-# Validate specifications
-deno task validate:specs
-
-# Run conformance tests
-deno task test
-
-# Check all validations
+# Validate specifications and vectors
 just validate
 
-# Format Deno code
-deno fmt
+# Regenerate vectors/*.json after editing a spec
+just vectors
 
-# Lint Deno code
-deno lint
+# Conformance tests: no AffineScript conformance runner is available yet
 ```
 
 ## Design Principles

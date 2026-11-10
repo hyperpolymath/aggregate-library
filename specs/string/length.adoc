@@ -10,6 +10,16 @@ length: String -> Number
 
 *Purpose*: Returns the number of characters in a string.
 
+*Character unit*: A character is one Unicode scalar value (a code point
+other than a surrogate, `+U+0000+`–`+U+D7FF+` or `+U+E000+`–`+U+10FFFF+`).
+`+length+` counts scalar values, not UTF-8 bytes, UTF-16 code units, or
+grapheme clusters. `+substring+` (`+specs/string/substring.adoc+`) indexes
+in the same unit. A conformer whose native strings count another unit
+converts: counting UTF-8 bytes gives `+2+` for `+"é"+`, where aLib gives
+`+1+`; counting UTF-16 code units agrees with aLib except on characters
+outside the Basic Multilingual Plane (for example `+U+1D11E+`, two code
+units, one scalar value).
+
 *Parameters*: - `+s+`: The string to measure
 
 *Return Value*: A non-negative number representing the count of
@@ -19,10 +29,11 @@ characters in `+s+`.
 Non-negative: `+length(s) ≥ 0+` for all strings `+s+` - Concatenation:
 `+length(concat(a, b)) = add(length(a), length(b))+`
 
-*Edge Cases*: - What constitutes a "`character`" (code point, grapheme
-cluster, byte) is implementation-defined - Unicode handling (combining
-characters, etc.) is implementation-defined - Multi-byte character
-encoding is implementation-defined
+*Edge Cases*: - A precomposed `+"é"+` (`+U+00E9+`) has length 1; the
+same text written as `+e+` followed by the combining acute accent
+(`+U+0065 U+0301+`) has length 2, because the unit is the scalar value, not
+the grapheme cluster - Normalisation is not applied: equal-looking strings
+in different normal forms may have different lengths
 
 === Executable Test Cases
 
@@ -48,4 +59,16 @@ test_cases:
   - input: ["123"]
     output: 3
     description: "Length of numeric string"
+
+  - input: ["\u00E9"]
+    output: 1
+    description: "Non-ASCII character (U+00E9, two UTF-8 bytes) counts as one scalar value"
+
+  - input: ["e\u0301"]
+    output: 2
+    description: "Decomposed e + U+0301 is two scalar values: not one grapheme cluster, not normalised"
+
+  - input: ["\U0001D11E"]
+    output: 1
+    description: "Supplementary-plane U+1D11E (two UTF-16 code units, four UTF-8 bytes) counts as one scalar value"
 ----

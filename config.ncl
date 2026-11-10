@@ -56,7 +56,7 @@
   },
 
   specifications = {
-    count = 20,
+    count = 29,
     categories = [
       "arithmetic",
       "comparison",
@@ -67,11 +67,11 @@
     ],
 
     operations = {
-      arithmetic = ["add", "subtract", "multiply", "divide", "modulo"],
+      arithmetic = ["add", "subtract", "multiply", "divide", "modulo", "negate", "absolute", "max", "min"],
       comparison = ["less_than", "greater_than", "equal", "not_equal", "less_equal", "greater_equal"],
       logical = ["and", "or", "not"],
-      string = ["concat", "length", "substring"],
-      collection = ["map", "filter", "fold", "contains"],
+      string = ["concat", "length", "substring", "reverse"],
+      collection = ["map", "filter", "fold", "contains", "length", "empty"],
       conditional = ["if_then_else"],
     },
   },

@@ -8,26 +8,52 @@ substring: String, Number, Number -> String
 
 === Behavioral Semantics
 
-*Purpose*: Extracts a portion of a string between two indices.
+*Purpose*: Extracts the characters of a string that lie in the half-open
+index range `+[start, end)+`.
 
-*Parameters*: - `+s+`: The source string - `+start+`: The starting index
-(inclusive) - `+end+`: The ending index (exclusive)
+*Parameters*: - `+s+`: The source string - `+start+`: Zero-based index
+of the first character to include (*inclusive*) - `+end+`: Zero-based
+index one past the last character to include (*exclusive*)
 
-*Return Value*: A new string containing characters from `+s+` starting
-at index `+start+` up to (but not including) index `+end+`.
+*Indexing*: Indices are zero-based integers that count Unicode scalar
+values, the character unit `+length+` defines
+(`+specs/string/length.adoc+`): index `+i+` is the boundary after the
+first `+i+` scalar values. Every integer `+0 ≤ i ≤ length(s)+` is therefore a
+boundary between whole characters, so no in-domain call can split a
+character (in particular, never the middle of a multi-byte UTF-8
+sequence or a UTF-16 surrogate pair). A conformer whose native indexing
+counts UTF-8 bytes or UTF-16 code units converts scalar-value indices to
+its own offsets. The second and third arguments are both indices
+(`+start+` and `+end+`); the third argument is *not* a length.
 
-*Preconditions*: - `+0 ≤ start ≤ length(s)+` -
-`+start ≤ end ≤ length(s)+`
+*Return Value*: A new string containing the characters of `+s+` at
+indices `+start+`, `+start + 1+`, …, `+end - 1+`. When
+`+start = end+` the result is the empty string.
+
+*Conformance domain (preconditions)*: `+0 ≤ start ≤ end ≤ length(s)+`.
+Every executable test case below lies inside this domain, including both
+boundaries (`+start = end+` and `+end = length(s)+`).
+
+*Out-of-range arguments*: A call outside the conformance domain (a
+negative index, `+start > end+`, `+end > length(s)+`, or a non-integer
+index) is not part of the aLib overlap. A conformer MAY reject such a
+call (error, exception, or absent result) or MAY clamp the indices into
+the domain, and MUST document which it does. No test case exercises
+these calls, and portable code MUST NOT depend on either behaviour.
 
 *Properties*: - `+substring(s, 0, length(s)) = s+` (entire string) -
-`+substring(s, i, i) = ""+` (empty substring) -
-`+length(substring(s, start, end)) = subtract(end, start)+`
+`+substring(s, i, i) = ""+` for every `+0 ≤ i ≤ length(s)+` (empty
+substring) - `+length(substring(s, start, end)) = subtract(end, start)+`
+- `+concat(substring(s, 0, i), substring(s, i, length(s))) = s+` for
+every `+0 ≤ i ≤ length(s)+` (every index and length here counts scalar
+values)
 
-*Edge Cases*: - Index out of bounds behavior is implementation-defined
-(may error or clamp) - Negative indices are implementation-defined -
-Zero-based vs one-based indexing is implementation-defined
-(specification assumes zero-based) - Character encoding and multi-byte
-characters is implementation-defined
+*Edge Cases*: - Non-ASCII text: `+substring("éa", 0, 1) = "é"+` (with a
+precomposed `+U+00E9+`), because `+"é"+` is one scalar value even though
+it is two UTF-8 bytes; a byte-indexed result (an invalid half of
+`+"é"+`) does not conform - A combining sequence such as `+e+` followed by
+`+U+0301+` is two scalar values, so an index may fall between them;
+grapheme clusters are not protected
 
 === Executable Test Cases
 
@@ -57,4 +83,28 @@ test_cases:
   - input: ["hello world", 6, 11]
     output: "world"
     description: "Extract word from sentence"
+
+  - input: ["hello", 5, 5]
+    output: ""
+    description: "Empty substring at the end boundary (start = end = length(s))"
+
+  - input: ["", 0, 0]
+    output: ""
+    description: "Only in-domain call on the empty string"
+
+  - input: ["\u00E9a", 0, 1]
+    output: "\u00E9"
+    description: "Indices count scalar values: the two-byte U+00E9 is one character"
+
+  - input: ["\u00E9a", 1, 2]
+    output: "a"
+    description: "Index 1 is the boundary after U+00E9, not inside its UTF-8 encoding"
+
+  - input: ["e\u0301a", 0, 1]
+    output: "e"
+    description: "Index 1 splits the combining sequence e + U+0301: grapheme clusters are not protected"
+
+  - input: ["\U0001D11Ea", 1, 2]
+    output: "a"
+    description: "Index 1 is the boundary after U+1D11E, not inside its UTF-16 surrogate pair"
 ----

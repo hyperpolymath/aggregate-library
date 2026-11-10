@@ -17,6 +17,10 @@ maintainers.
 
 - Git for version control
 
+- `just`, `jq` 1.7 or later, and a supported `yq` (mikefarah yq v4 or
+  kislyuk yq) for `just validate`; `just setup` (or `just deps`) reports
+  any that are missing or too old
+
 - Text editor or IDE
 
 - Familiarity with at least one of the seven target languages
